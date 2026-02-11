@@ -34,6 +34,17 @@ Choose a dataset (10000+ data points) that interests you — it should include a
    npx newman run <collection.json> -e production.postman_environment.json
    ```
 
+## Dataset
+
+*Describe the dataset you chose:*
+
+| Field | Description |
+|---|---|
+| **Dataset source** | *e.g. Kaggle, public API, CSV, etc.* |
+| **Primary resource (CRUD)** | *e.g. Movies (id, title, release_year, genre, description)* |
+| **Secondary resource 1 (read-only)** | *e.g. Actors (id, name, movies_played)* |
+| **Secondary resource 2 (read-only)** | *e.g. Ratings (id, text, movie)* |
+
 ## Requirements
 
 See [all requirements in Issues](../../issues/). Close issues as you implement them. Create additional issues for any custom functionality. See [TESTING.md](TESTING.md) for detailed testing requirements.
@@ -59,7 +70,7 @@ See [all requirements in Issues](../../issues/). Close issues as you implement t
 
 | Requirement | Issue | Status |
 |---|---|---|
-| Queries and mutations via single `/graphql` endpoint | [#14](../../issues/14 | :white_large_square: |
+| Queries and mutations via single `/graphql` endpoint | [#14](../../issues/14) | :white_large_square: |
 | At least one nested query | [#15](../../issues/15) | :white_large_square: |
 | GraphQL Playground available | [#16](../../issues/16) | :white_large_square: |
 
@@ -74,17 +85,6 @@ See [all requirements in Issues](../../issues/). Close issues as you implement t
 | Code quality (consistent standard, modular, documented) | [#10](../../issues/10) | :white_large_square: |
 | Deployed and publicly accessible | [#9](../../issues/9) | :white_large_square: |
 | Peer review reflection submitted on merge request | [#11](../../issues/11) | :white_large_square: |
-
-## Dataset
-
-*Describe the dataset you chose:*
-
-| Field | Description |
-|---|---|
-| **Dataset source** | *e.g. Kaggle, public API, CSV, etc.* |
-| **Primary resource (CRUD)** | *e.g. Movies (id, title, release_year, genre, description)* |
-| **Secondary resource 1 (read-only)** | *e.g. Actors (id, name, movies_played)* |
-| **Secondary resource 2 (read-only)** | *e.g. Ratings (id, text, movie)* |
 
 ## Core Technologies Used
 
