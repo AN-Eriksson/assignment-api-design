@@ -45,6 +45,40 @@ Choose a dataset (10000+ data points) that interests you — it should include a
 | **Secondary resource 1 (read-only)** | *e.g. Actors (id, name, movies_played)* |
 | **Secondary resource 2 (read-only)** | *e.g. Ratings (id, text, movie)* |
 
+
+## Design Decisions
+
+### Authentication
+
+*Describe your JWT authentication solution. Why did you choose this approach? What alternatives exist, and what are their trade-offs?*
+
+### API Design
+
+**REST students:**
+- *How did you implement HATEOAS? How does it improve API discoverability?*
+- *How did you structure your resource URLs and use HTTP methods/status codes?*
+
+**GraphQL students:**
+- *How did you design your schema (types, queries, mutations)?*
+- *How did you implement nested queries? How does the single-endpoint approach affect your design?*
+
+### Error Handling
+
+*How does your API handle errors? Describe the format and consistency of your error responses.*
+
+## Core Technologies Used
+
+*List the technologies you chose and briefly explain why:*
+
+
+## Reflection
+
+*What was hard? What did you learn? What would you do differently?*
+
+## Acknowledgements
+
+*Resources, attributions, or shoutouts.*
+
 ## Requirements
 
 See [all requirements in Issues](../../issues/). Close issues as you implement them. Create additional issues for any custom functionality. See [TESTING.md](TESTING.md) for detailed testing requirements.
@@ -86,11 +120,4 @@ See [all requirements in Issues](../../issues/). Close issues as you implement t
 | Deployed and publicly accessible | [#9](../../issues/9) | :white_large_square: |
 | Peer review reflection submitted on merge request | [#11](../../issues/11) | :white_large_square: |
 
-## Core Technologies Used
 
-*List the technologies you chose and briefly explain why:*
-
-
-## Acknowledgements
-
-*Resources, attributions, or shoutouts.*
