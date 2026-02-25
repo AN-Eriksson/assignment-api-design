@@ -1,0 +1,28 @@
+############################
+# macOS
+############################
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+############################
+# Gradle / Java build
+############################
+.gradle/
+build/
+out/
+*.class
+*.log
+hs_err_pid*
+
+############################
+# IntelliJ IDEA
+############################
+.idea/
+*.iml
+*.ipr
+*.iws
