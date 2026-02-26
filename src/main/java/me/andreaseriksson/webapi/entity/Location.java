@@ -13,13 +13,17 @@ public class Location {
 
     private String city;
     private String state;
-    private String country;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country country;
+
     private BigDecimal latitude;
     private BigDecimal longitude;
 
     public Location() {}
 
-    public Location(String city, String state, String country, BigDecimal latitude, BigDecimal longitude){
+    public Location(String city, String state, Country country, BigDecimal latitude, BigDecimal longitude){
         this.city = city;
         this.state = state;
         this.country = country;
