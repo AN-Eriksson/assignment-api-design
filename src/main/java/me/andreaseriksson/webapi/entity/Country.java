@@ -18,4 +18,8 @@ public class Country {
     public Country(String code) {
         this.code = code;
     }
+
+    public String getCode() {
+        return code;
+    }
 }
