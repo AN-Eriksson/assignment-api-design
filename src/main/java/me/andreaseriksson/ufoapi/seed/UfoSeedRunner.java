@@ -2,12 +2,17 @@ package me.andreaseriksson.ufoapi.seed;
 
 import me.andreaseriksson.ufoapi.entity.*;
 import me.andreaseriksson.ufoapi.repository.*;
+import me.andreaseriksson.ufoapi.service.CountryService;
+import me.andreaseriksson.ufoapi.service.LocationService;
+import me.andreaseriksson.ufoapi.service.ShapeService;
+import me.andreaseriksson.ufoapi.service.SightingService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -19,24 +24,21 @@ import java.util.*;
 @Component
 public class UfoSeedRunner implements CommandLineRunner {
 
-    private final CountryRepository countryRepository;
-    private final LocationRepository locationRepository;
-    private final ShapeRepository shapeRepository;
-    private final SightingRepository sightingRepository;
+    private final CountryService countryService;
+    private final LocationService locationService;
+    private final ShapeService shapeService;
+    private final SightingService sightingService;
 
-    public UfoSeedRunner(CountryRepository countryRepository,
-                         LocationRepository locationRepository,
-                         ShapeRepository shapeRepository,
-                         SightingRepository sightingRepository) {
-        this.countryRepository = countryRepository;
-        this.locationRepository = locationRepository;
-        this.shapeRepository = shapeRepository;
-        this.sightingRepository = sightingRepository;
+    public UfoSeedRunner(LocationService locationService, ShapeService shapeService, SightingService sightingService, CountryService countryService) {
+        this.countryService = countryService;
+        this.locationService = locationService;
+        this.shapeService = shapeService;
+        this.sightingService = sightingService;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        if (sightingRepository.count() > 0) {
+        if (sightingService.count() > 0) {
             System.out.println("Database already seeded. Skipping import.");
             return;
         }
@@ -54,10 +56,10 @@ public class UfoSeedRunner implements CommandLineRunner {
 
         // Caches (avoid repeated DB lookups)
         Map<String, Country> countryCache = new HashMap<>();
-        countryRepository.findAll().forEach(c -> countryCache.put(c.getCode(), c));
+        countryService.findAll().forEach(c -> countryCache.put(c.getCode(), c));
 
         Map<String, Shape> shapeCache = new HashMap<>();
-        shapeRepository.findAll().forEach(s -> shapeCache.put(s.getName(), s));
+        shapeService.findAll().forEach(s -> shapeCache.put(s.getName(), s));
 
         Map<String, Location> locationCache = new HashMap<>();
 
@@ -78,15 +80,15 @@ public class UfoSeedRunner implements CommandLineRunner {
                 Country country = null;
                 if (countryCode != null) {
                     country = countryCache.computeIfAbsent(countryCode, code ->
-                            countryRepository.save(new Country(code)));
+                            countryService.save(new Country(code)));
                 }
 
                 String locKey = locationKey(city, state, country != null ? country.getCode() : null, latitude, longitude);
                 final Country finalCountry = country;
                 Location location = locationCache.computeIfAbsent(locKey, k ->
-                        locationRepository
+                        locationService
                                 .findByCityAndStateAndCountryAndLatitudeAndLongitude(city, state, finalCountry, latitude, longitude)
-                                .orElseGet(() -> locationRepository.save(
+                                .orElseGet(() -> locationService.save(
                                         new Location(city, state, finalCountry, latitude, longitude)
                                 ))
                 );
@@ -94,7 +96,7 @@ public class UfoSeedRunner implements CommandLineRunner {
                 Shape shape = null;
                 if (shapeName != null) {
                     shape = shapeCache.computeIfAbsent(shapeName, name ->
-                            shapeRepository.save(new Shape(name)));
+                            shapeService.save(new Shape(name)));
                 }
 
                 Sighting sighting = new Sighting(
@@ -109,7 +111,7 @@ public class UfoSeedRunner implements CommandLineRunner {
 
                 batch.add(sighting);
                 if (batch.size() >= BATCH_SIZE) {
-                    sightingRepository.saveAll(batch);
+                    sightingService.saveAll(batch);
                     batch.clear();
                 }
 
@@ -120,7 +122,7 @@ public class UfoSeedRunner implements CommandLineRunner {
         }
 
         if (!batch.isEmpty()) {
-            sightingRepository.saveAll(batch);
+            sightingService.saveAll(batch);
         }
 
         System.out.println("Done. Imported rows: " + count);
