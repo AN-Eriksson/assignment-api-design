@@ -1,15 +1,13 @@
-package me.andreaseriksson.webapi.seed;
+package me.andreaseriksson.ufoapi.seed;
 
-import me.andreaseriksson.webapi.entity.*;
-import me.andreaseriksson.webapi.repository.*;
+import me.andreaseriksson.ufoapi.entity.*;
+import me.andreaseriksson.ufoapi.repository.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -37,7 +35,6 @@ public class UfoSeedRunner implements CommandLineRunner {
     }
 
     @Override
-//    @Transactional
     public void run(String... args) throws Exception {
         if (sightingRepository.count() > 0) {
             System.out.println("Database already seeded. Skipping import.");
@@ -64,7 +61,7 @@ public class UfoSeedRunner implements CommandLineRunner {
 
         Map<String, Location> locationCache = new HashMap<>();
 
-        final int BATCH_SIZE = 1000;
+        final int BATCH_SIZE = 2000;
         List<Sighting> batch = new ArrayList<>(BATCH_SIZE);
 
         int count = 0;

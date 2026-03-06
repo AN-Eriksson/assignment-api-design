@@ -1,4 +1,4 @@
-package me.andreaseriksson.webapi.entity;
+package me.andreaseriksson.ufoapi.entity;
 
 import jakarta.persistence.*;
 

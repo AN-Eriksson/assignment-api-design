@@ -1,4 +1,4 @@
-package me.andreaseriksson.webapi;
+package me.andreaseriksson.ufoapi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

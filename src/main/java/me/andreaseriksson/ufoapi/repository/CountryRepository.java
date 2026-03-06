@@ -1,6 +1,6 @@
-package me.andreaseriksson.webapi.repository;
+package me.andreaseriksson.ufoapi.repository;
 
-import me.andreaseriksson.webapi.entity.Country;
+import me.andreaseriksson.ufoapi.entity.Country;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

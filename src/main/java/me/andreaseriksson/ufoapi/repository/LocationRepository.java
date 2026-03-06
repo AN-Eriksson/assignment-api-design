@@ -1,7 +1,7 @@
-package me.andreaseriksson.webapi.repository;
+package me.andreaseriksson.ufoapi.repository;
 
-import me.andreaseriksson.webapi.entity.Country;
-import me.andreaseriksson.webapi.entity.Location;
+import me.andreaseriksson.ufoapi.entity.Country;
+import me.andreaseriksson.ufoapi.entity.Location;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.math.BigDecimal;

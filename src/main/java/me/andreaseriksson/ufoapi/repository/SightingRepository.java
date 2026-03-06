@@ -1,6 +1,6 @@
-package me.andreaseriksson.webapi.repository;
+package me.andreaseriksson.ufoapi.repository;
 
-import me.andreaseriksson.webapi.entity.Sighting;
+import me.andreaseriksson.ufoapi.entity.Sighting;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SightingRepository extends JpaRepository<Sighting, Long> {
