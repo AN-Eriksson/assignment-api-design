@@ -12,18 +12,18 @@ import java.util.Optional;
 @Service
 public class LocationService {
 
-    private final LocationRepository locationRepository;
+    private final LocationRepository repository;
 
-    public LocationService(LocationRepository locationRepository) {
-        this.locationRepository = locationRepository;
+    public LocationService(LocationRepository repository) {
+        this.repository = repository;
     }
 
     public Location save(Location location) {
-        return locationRepository.save(location);
+        return repository.save(location);
     }
 
     public List<Location> findAll() {
-        return locationRepository.findAll();
+        return repository.findAll();
     }
 
     public Optional<Location> findByCityAndStateAndCountryAndLatitudeAndLongitude(
@@ -32,7 +32,7 @@ public class LocationService {
             Country country,
             BigDecimal latitude,
             BigDecimal longitude) {
-        return locationRepository.findByCityAndStateAndCountryAndLatitudeAndLongitude(
+        return repository.findByCityAndStateAndCountryAndLatitudeAndLongitude(
                 city, state, country, latitude, longitude);
     }
 }

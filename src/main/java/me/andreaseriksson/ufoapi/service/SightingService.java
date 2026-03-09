@@ -9,25 +9,25 @@ import java.util.List;
 @Service
 public class SightingService {
 
-    private final SightingRepository sightingRepository;
+    private final SightingRepository repository;
 
-    public SightingService(SightingRepository sightingRepository) {
-        this.sightingRepository = sightingRepository;
+    public SightingService(SightingRepository repository) {
+        this.repository = repository;
     }
 
     public Sighting save(Sighting sighting) {
-        return sightingRepository.save(sighting);
+        return repository.save(sighting);
     }
 
     public List<Sighting> saveAll(List<Sighting> sightings) {
-        return sightingRepository.saveAll(sightings);
+        return repository.saveAll(sightings);
     }
 
     public List<Sighting> findAll() {
-        return sightingRepository.findAll();
+        return repository.findAll();
     }
 
     public long count() {
-        return sightingRepository.count();
+        return repository.count();
     }
 }

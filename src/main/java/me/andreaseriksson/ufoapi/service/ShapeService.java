@@ -10,21 +10,21 @@ import java.util.Optional;
 @Service
 public class ShapeService {
 
-    private final ShapeRepository shapeRepository;
+    private final ShapeRepository repository;
 
-    public ShapeService(ShapeRepository shapeRepository) {
-        this.shapeRepository = shapeRepository;
+    public ShapeService(ShapeRepository repository) {
+        this.repository = repository;
     }
 
     public Shape save(Shape shape) {
-        return shapeRepository.save(shape);
+        return repository.save(shape);
     }
 
     public List<Shape> findAll() {
-        return shapeRepository.findAll();
+        return repository.findAll();
     }
 
     public Optional<Shape> findByName(String name) {
-        return shapeRepository.findByName(name);
+        return repository.findByName(name);
     }
 }

@@ -10,21 +10,21 @@ import java.util.Optional;
 @Service
 public class CountryService {
 
-    private final CountryRepository countryRepository;
+    private final CountryRepository repository;
 
-    public CountryService(CountryRepository countryRepository) {
-        this.countryRepository = countryRepository;
+    public CountryService(CountryRepository repository) {
+        this.repository = repository;
     }
 
     public Country save(Country country) {
-        return countryRepository.save(country);
+        return repository.save(country);
     }
 
     public List<Country> findAll() {
-        return countryRepository.findAll();
+        return repository.findAll();
     }
 
     public Optional<Country> findByCode(String code) {
-        return countryRepository.findByCode(code);
+        return repository.findByCode(code);
     }
 }
