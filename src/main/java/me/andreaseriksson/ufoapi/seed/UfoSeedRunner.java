@@ -1,5 +1,6 @@
 package me.andreaseriksson.ufoapi.seed;
 
+import jakarta.persistence.EntityManager;
 import me.andreaseriksson.ufoapi.entity.*;
 import me.andreaseriksson.ufoapi.repository.*;
 import me.andreaseriksson.ufoapi.service.CountryService;
@@ -12,6 +13,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -28,15 +30,18 @@ public class UfoSeedRunner implements CommandLineRunner {
     private final LocationService locationService;
     private final ShapeService shapeService;
     private final SightingService sightingService;
+    private final EntityManager entityManager;
 
-    public UfoSeedRunner(LocationService locationService, ShapeService shapeService, SightingService sightingService, CountryService countryService) {
+    public UfoSeedRunner(LocationService locationService, ShapeService shapeService, SightingService sightingService, CountryService countryService, EntityManager entityManager) {
         this.countryService = countryService;
         this.locationService = locationService;
         this.shapeService = shapeService;
         this.sightingService = sightingService;
+        this.entityManager = entityManager;
     }
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         if (sightingService.count() > 0) {
             System.out.println("Database already seeded. Skipping import.");
@@ -113,6 +118,8 @@ public class UfoSeedRunner implements CommandLineRunner {
                 if (batch.size() >= BATCH_SIZE) {
                     sightingService.saveAll(batch);
                     batch.clear();
+                    entityManager.flush();
+                    entityManager.clear();
                 }
 
                 count++;
@@ -123,6 +130,8 @@ public class UfoSeedRunner implements CommandLineRunner {
 
         if (!batch.isEmpty()) {
             sightingService.saveAll(batch);
+            entityManager.flush();
+            entityManager.clear();
         }
 
         System.out.println("Done. Imported rows: " + count);
