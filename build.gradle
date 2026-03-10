@@ -14,6 +14,13 @@ java {
 	}
 }
 
+// Disable the plain jar task so only the Spring Boot fat jar (bootJar) is produced.
+// This prevents build/libs/ from containing a jar without bundled dependencies,
+// which would cause runtime errors (missing Tomcat, SpringDoc, etc.) in Docker.
+tasks.named('jar') {
+	enabled = false
+}
+
 repositories {
 	mavenCentral()
 }
@@ -23,6 +30,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.postgresql:postgresql'
 	implementation 'org.apache.commons:commons-csv:1.14.1'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
