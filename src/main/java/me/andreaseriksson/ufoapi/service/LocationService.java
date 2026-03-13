@@ -3,6 +3,8 @@ package me.andreaseriksson.ufoapi.service;
 import me.andreaseriksson.ufoapi.entity.Country;
 import me.andreaseriksson.ufoapi.entity.Location;
 import me.andreaseriksson.ufoapi.repository.LocationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,6 +28,10 @@ public class LocationService {
         return repository.findAll();
     }
 
+    public Page<Location> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
     public Optional<Location> findByCityAndStateAndCountryAndLatitudeAndLongitude(
             String city,
             String state,
@@ -39,5 +45,4 @@ public class LocationService {
     public Optional<Location> findById(Long id) {
         return repository.findById(id);
     }
-
 }
