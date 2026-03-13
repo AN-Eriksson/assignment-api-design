@@ -5,16 +5,21 @@ import me.andreaseriksson.ufoapi.dto.SightingMapper;
 import me.andreaseriksson.ufoapi.dto.SightingResponse;
 import me.andreaseriksson.ufoapi.entity.Sighting;
 import me.andreaseriksson.ufoapi.service.SightingService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/sightings")
 public class SightingController {
 
+    private static final int MAX_PAGE_SIZE = 100;
     private final SightingService service;
 
     public SightingController(SightingService service) {
@@ -22,10 +27,24 @@ public class SightingController {
     }
 
     @GetMapping
-    public List<SightingResponse> getAll() {
-        return service.findAll().stream()
-                .map(SightingMapper::toResponse)
-                .toList();
+    public Page<SightingResponse> getAll(
+            @PageableDefault(page = 0, size = 20, sort = "id", direction = Sort.Direction.ASC)
+            Pageable pageable
+    ) {
+        Pageable safePageable = enforcePageLimits(pageable);
+        return service.findAll(safePageable).map(SightingMapper::toResponse);
+    }
+
+    private Pageable enforcePageLimits(Pageable pageable) {
+        int safePage = Math.max(pageable.getPageNumber(), 0);
+        int requestedSize = pageable.getPageSize();
+        int safeSize = Math.min(Math.max(requestedSize, 1), MAX_PAGE_SIZE);
+
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort()
+                : Sort.by(Sort.Direction.ASC, "id");
+
+        return PageRequest.of(safePage, safeSize, sort);
     }
 
     @GetMapping("/{id}")

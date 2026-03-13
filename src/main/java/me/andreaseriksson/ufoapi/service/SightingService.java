@@ -7,6 +7,8 @@ import me.andreaseriksson.ufoapi.entity.Sighting;
 import me.andreaseriksson.ufoapi.repository.SightingRepository;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,16 +43,16 @@ public class SightingService {
         return repository.save(s);
     }
 
-    public List<Sighting> saveAll(List<Sighting> sightings) {
-        return repository.saveAll(sightings);
+    public void saveAll(List<Sighting> sightings) {
+        repository.saveAll(sightings);
     }
 
     public Optional<Sighting> findById(Long id) {
         return repository.findById(id);
     }
 
-    public List<Sighting> findAll() {
-        return repository.findAll();
+    public Page<Sighting> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public Optional<Sighting> update(Long id, CreateSightingRequest req) {
