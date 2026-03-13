@@ -15,13 +15,14 @@ import org.springframework.data.domain.Pageable;
 import me.andreaseriksson.ufoapi.dto.SightingFilter;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
-import java.net.URI;
 import java.util.List;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.CollectionModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/sightings")
 public class SightingController {
-
     private static final int MAX_PAGE_SIZE = 100;
     private final SightingService service;
 
@@ -30,7 +31,7 @@ public class SightingController {
     }
 
     @GetMapping
-    public List<SightingResponse> getAll(
+    public CollectionModel<EntityModel<SightingResponse>> getAll(
             @RequestParam(required = false) String city,
             @RequestParam(required = false) String state,
             @RequestParam(required = false) String countryCode,
@@ -39,7 +40,7 @@ public class SightingController {
             @RequestParam(required = false) Integer maxDurationSeconds,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDatePosted,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDatePosted,
-            @PageableDefault(page = 0, size = 20)
+            @PageableDefault(size = 20)
             @SortDefault(sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
@@ -51,9 +52,16 @@ public class SightingController {
                 fromDatePosted, toDatePosted
         );
 
-        return service.findAll(safePageable, filter)
+        List<EntityModel<SightingResponse>> models = service.findAll(safePageable, filter)
                 .map(SightingMapper::toResponse)
+                .map(dto -> EntityModel.of(dto,
+                        linkTo(methodOn(SightingController.class).getById(dto.id())).withSelfRel()
+                ))
                 .getContent();
+
+        return CollectionModel.of(models,
+                linkTo(SightingController.class).withSelfRel()
+        );
     }
 
     private Pageable enforcePageLimits(Pageable pageable) {
@@ -69,24 +77,41 @@ public class SightingController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SightingResponse> getById(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<SightingResponse>> getById(@PathVariable Long id) {
         return service.findById(id)
                 .map(SightingMapper::toResponse)
+                .map(dto -> EntityModel.of(dto,
+                        linkTo(methodOn(SightingController.class).getById(id)).withSelfRel(),
+                        linkTo(SightingController.class).withRel("sightings")
+                ))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<SightingResponse> create(@RequestBody CreateSightingRequest req) {
+    public ResponseEntity<EntityModel<SightingResponse>> create(@RequestBody CreateSightingRequest req) {
         Sighting created = service.create(req);
-        return ResponseEntity.created(URI.create("/sightings/" + created.getId()))
-                .body(SightingMapper.toResponse(created));
+        SightingResponse dto = SightingMapper.toResponse(created);
+        Long newId = created.getId();
+
+        EntityModel<SightingResponse> model = EntityModel.of(dto,
+                linkTo(methodOn(SightingController.class).getById(newId)).withSelfRel(),
+                linkTo(SightingController.class).withRel("sightings")
+        );
+
+        return ResponseEntity
+                .created(linkTo(methodOn(SightingController.class).getById(newId)).toUri())
+                .body(model);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SightingResponse> update(@PathVariable Long id, @RequestBody CreateSightingRequest req) {
+    public ResponseEntity<EntityModel<SightingResponse>> update(@PathVariable Long id, @RequestBody CreateSightingRequest req) {
         return service.update(id, req)
                 .map(SightingMapper::toResponse)
+                .map(dto -> EntityModel.of(dto,
+                        linkTo(methodOn(SightingController.class).getById(id)).withSelfRel(),
+                        linkTo(SightingController.class).withRel("sightings")
+                ))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
