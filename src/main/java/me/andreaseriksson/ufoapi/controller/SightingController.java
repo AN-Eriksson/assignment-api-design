@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/sightings")
@@ -27,12 +28,14 @@ public class SightingController {
     }
 
     @GetMapping
-    public Page<SightingResponse> getAll(
+    public List<SightingResponse> getAll(
             @PageableDefault(page = 0, size = 20, sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
         Pageable safePageable = enforcePageLimits(pageable);
-        return service.findAll(safePageable).map(SightingMapper::toResponse);
+        return service.findAll(safePageable)
+                .map(SightingMapper::toResponse)
+                .getContent();
     }
 
     private Pageable enforcePageLimits(Pageable pageable) {
