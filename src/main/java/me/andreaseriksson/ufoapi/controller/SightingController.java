@@ -1,5 +1,8 @@
 package me.andreaseriksson.ufoapi.controller;
 
+import me.andreaseriksson.ufoapi.dto.CreateSightingRequest;
+import me.andreaseriksson.ufoapi.dto.SightingMapper;
+import me.andreaseriksson.ufoapi.dto.SightingResponse;
 import me.andreaseriksson.ufoapi.entity.Sighting;
 import me.andreaseriksson.ufoapi.service.SightingService;
 import org.springframework.http.ResponseEntity;
@@ -19,28 +22,32 @@ public class SightingController {
     }
 
     @GetMapping
-    public List<Sighting> getAll() {
-        return service.findAll();
+    public List<SightingResponse> getAll() {
+        return service.findAll().stream()
+                .map(SightingMapper::toResponse)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Sighting> getById(@PathVariable Long id) {
+    public ResponseEntity<SightingResponse> getById(@PathVariable Long id) {
         return service.findById(id)
-                .map(sighting -> ResponseEntity.ok(sighting))
+                .map(SightingMapper::toResponse)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Sighting> create(@RequestBody Sighting sighting) {
-        Sighting created = service.save(sighting);
+    public ResponseEntity<SightingResponse> create(@RequestBody CreateSightingRequest req) {
+        Sighting created = service.create(req);
         return ResponseEntity.created(URI.create("/sightings/" + created.getId()))
-                .body(created);
+                .body(SightingMapper.toResponse(created));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Sighting> update(@PathVariable Long id, @RequestBody Sighting sighting) {
-        return service.update(id, sighting)
-                .map(updated -> ResponseEntity.ok(updated))
+    public ResponseEntity<SightingResponse> update(@PathVariable Long id, @RequestBody CreateSightingRequest req) {
+        return service.update(id, req)
+                .map(SightingMapper::toResponse)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 

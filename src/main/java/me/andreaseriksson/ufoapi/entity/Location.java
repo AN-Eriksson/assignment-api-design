@@ -30,4 +30,29 @@ public class Location {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
 }

@@ -35,4 +35,9 @@ public class LocationService {
         return repository.findByCityAndStateAndCountryAndLatitudeAndLongitude(
                 city, state, country, latitude, longitude);
     }
+
+    public Optional<Location> findById(Long id) {
+        return repository.findById(id);
+    }
+
 }

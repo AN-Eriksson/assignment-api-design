@@ -27,4 +27,9 @@ public class ShapeService {
     public Optional<Shape> findByName(String name) {
         return repository.findByName(name);
     }
+
+    public Optional<Shape> findById(Long id) {
+        return repository.findById(id);
+    }
+
 }
