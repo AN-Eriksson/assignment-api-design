@@ -8,11 +8,13 @@ import me.andreaseriksson.ufoapi.service.SightingService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
+import me.andreaseriksson.ufoapi.dto.SightingFilter;
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDate;
 import java.net.URI;
 import java.util.List;
 
@@ -29,11 +31,27 @@ public class SightingController {
 
     @GetMapping
     public List<SightingResponse> getAll(
-            @PageableDefault(page = 0, size = 20, sort = "id", direction = Sort.Direction.ASC)
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String state,
+            @RequestParam(required = false) String countryCode,
+            @RequestParam(required = false) String shapeName,
+            @RequestParam(required = false) Integer minDurationSeconds,
+            @RequestParam(required = false) Integer maxDurationSeconds,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDatePosted,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDatePosted,
+            @PageableDefault(page = 0, size = 20)
+            @SortDefault(sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
         Pageable safePageable = enforcePageLimits(pageable);
-        return service.findAll(safePageable)
+
+        SightingFilter filter = new SightingFilter(
+                city, state, countryCode, shapeName,
+                minDurationSeconds, maxDurationSeconds,
+                fromDatePosted, toDatePosted
+        );
+
+        return service.findAll(safePageable, filter)
                 .map(SightingMapper::toResponse)
                 .getContent();
     }

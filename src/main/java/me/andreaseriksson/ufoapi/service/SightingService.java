@@ -6,11 +6,13 @@ import me.andreaseriksson.ufoapi.entity.Shape;
 import me.andreaseriksson.ufoapi.entity.Sighting;
 import me.andreaseriksson.ufoapi.repository.SightingRepository;
 import org.springframework.stereotype.Service;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
+import me.andreaseriksson.ufoapi.dto.SightingFilter;
+import me.andreaseriksson.ufoapi.repository.SightingSpecifications;
+import org.springframework.data.jpa.domain.Specification;
 
 @Service
 public class SightingService {
@@ -53,6 +55,11 @@ public class SightingService {
 
     public Page<Sighting> findAll(Pageable pageable) {
         return repository.findAll(pageable);
+    }
+
+    public Page<Sighting> findAll(Pageable pageable, SightingFilter filter) {
+        Specification<Sighting> spec = SightingSpecifications.withFilter(filter);
+        return repository.findAll(spec, pageable);
     }
 
     public Optional<Sighting> update(Long id, CreateSightingRequest req) {
