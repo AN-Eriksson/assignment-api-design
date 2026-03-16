@@ -31,20 +31,19 @@ jobs:
           SERVER_PORT: ${{ vars.SERVER_PORT }}
         run: docker compose up -d --build
 
-  - name: Wait for API and seed
-    run: |
-      for i in {1..60}; do
-        count=$(curl -fsS "http://localhost:${{ vars.SERVER_PORT }}/locations?page=0&size=1" | grep -c '"id"')
-        if [ "$count" -gt 0 ]; then
-          echo "Seed complete!"
-          exit 0
-        fi
-        echo "Waiting for seed..."
-        sleep 5
-      done
-      docker compose logs app
-      exit 1
-
+      - name: Wait for API and seed
+        run: |
+          for i in {1..60}; do
+            count=$(curl -fsS "http://localhost:${{ vars.SERVER_PORT }}/locations?page=0&size=1" | grep -c '"id"')
+            if [ "$count" -gt 0 ]; then
+              echo "Seed complete!"
+              exit 0
+            fi
+            echo "Waiting for seed..."
+            sleep 5
+          done
+          docker compose logs app
+          exit 1
 
       - name: Run Newman
         run: newman run postman/ufoapi.postman_collection.json -e postman/ci.postman_environment.json
