@@ -1,5 +1,7 @@
 package me.andreaseriksson.ufoapi.controller;
 
+import me.andreaseriksson.ufoapi.dto.ShapeMapper;
+import me.andreaseriksson.ufoapi.dto.ShapeResponse;
 import me.andreaseriksson.ufoapi.entity.Shape;
 import me.andreaseriksson.ufoapi.service.ShapeService;
 import org.springframework.data.domain.PageRequest;
@@ -28,16 +30,17 @@ public class ShapeController {
     }
 
     @GetMapping
-    public CollectionModel<EntityModel<Shape>> getAll(
+    public CollectionModel<EntityModel<ShapeResponse>> getAll(
             @PageableDefault(size = 20)
             @SortDefault(sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
         Pageable safePageable = enforcePageLimits(pageable);
 
-        List<EntityModel<Shape>> models = service.findAll(safePageable)
-                .map(shape -> EntityModel.of(shape,
-                        linkTo(methodOn(ShapeController.class).getById(shape.getId())).withSelfRel()
+        List<EntityModel<ShapeResponse>> models = service.findAll(safePageable)
+                .map(ShapeMapper::toResponse)
+                .map(dto -> EntityModel.of(dto,
+                        linkTo(methodOn(ShapeController.class).getById(dto.id())).withSelfRel()
                 ))
                 .getContent();
 
@@ -47,9 +50,10 @@ public class ShapeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<Shape>> getById(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<ShapeResponse>> getById(@PathVariable Long id) {
         return service.findById(id)
-                .map(shape -> EntityModel.of(shape,
+                .map(ShapeMapper::toResponse)
+                .map(dto -> EntityModel.of(dto,
                         linkTo(methodOn(ShapeController.class).getById(id)).withSelfRel(),
                         linkTo(ShapeController.class).withRel("shapes")
                 ))

@@ -1,5 +1,7 @@
 package me.andreaseriksson.ufoapi.controller;
 
+import me.andreaseriksson.ufoapi.dto.LocationMapper;
+import me.andreaseriksson.ufoapi.dto.LocationResponse;
 import me.andreaseriksson.ufoapi.entity.Location;
 import me.andreaseriksson.ufoapi.service.LocationService;
 import org.springframework.data.domain.PageRequest;
@@ -28,16 +30,17 @@ public class LocationController {
     }
 
     @GetMapping
-    public CollectionModel<EntityModel<Location>> getAll(
+    public CollectionModel<EntityModel<LocationResponse>> getAll(
             @PageableDefault(size = 20)
             @SortDefault(sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
         Pageable safePageable = enforcePageLimits(pageable);
 
-        List<EntityModel<Location>> models = service.findAll(safePageable)
-                .map(location -> EntityModel.of(location,
-                        linkTo(methodOn(LocationController.class).getById(location.getId())).withSelfRel()
+        List<EntityModel<LocationResponse>> models = service.findAll(safePageable)
+                .map(LocationMapper::toResponse)
+                .map(dto -> EntityModel.of(dto,
+                        linkTo(methodOn(LocationController.class).getById(dto.id())).withSelfRel()
                 ))
                 .getContent();
 
@@ -47,9 +50,10 @@ public class LocationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<Location>> getById(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<LocationResponse>> getById(@PathVariable Long id) {
         return service.findById(id)
-                .map(location -> EntityModel.of(location,
+                .map(LocationMapper::toResponse)
+                .map(dto -> EntityModel.of(dto,
                         linkTo(methodOn(LocationController.class).getById(id)).withSelfRel(),
                         linkTo(LocationController.class).withRel("locations")
                 ))
