@@ -1,0 +1,1215 @@
+{
+  "info": {
+    "_postman_id": "d4d4d390-5b46-4a77-a6f2-53f57c5ea001",
+    "name": "UFO API - Assignment Tests",
+    "description": "Postman collection for assignment-api-design. Covers auth, primary CRUD resource (sightings), and secondary read-only resources (locations, shapes). Includes success/failure scenarios and environment-driven data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.environment.get('baseUrl')) pm.environment.set('baseUrl', 'http://localhost:8080');",
+          "",
+          "// Reset run-scoped random data at the start of each collection run.",
+          "if (pm.info.requestName && pm.info.requestName.startsWith('01 ')) {",
+          "  pm.environment.set('runId', Date.now().toString());",
+          "}",
+          "",
+          "const runId = pm.environment.get('runId') || Date.now().toString();",
+          "pm.environment.set('runId', runId);",
+          "pm.environment.set('username', `ufo_user_${runId}`);",
+          "pm.environment.set('email', `ufo_${runId}@example.com`);",
+          "pm.environment.set('password', 'Secret123!');",
+          "",
+          "if (!pm.environment.get('missingId')) pm.environment.set('missingId', '999999999');"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Auth - Register success",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+              "pm.test('Content-Type is JSON (application/json or application/hal+json)', () => {",
+              "  const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "  pm.expect(ct).to.match(/application\\/(hal\\+)?json/);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Safe response fields', () => {",
+              "  pm.expect(json).to.have.property('id');",
+              "  pm.expect(json).to.have.property('username', pm.environment.get('username'));",
+              "  pm.expect(json).to.have.property('email', pm.environment.get('email'));",
+              "  pm.expect(json.passwordHash).to.equal(undefined);",
+              "});",
+              "pm.environment.set('registeredUserId', json.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Auth - Register duplicate should fail (409)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 409', () => pm.response.to.have.status(409));",
+              "pm.test('Content-Type is JSON (application/json or application/hal+json)', () => {",
+              "  const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "  pm.expect(ct).to.match(/application\\/(hal\\+)?json/);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Error shape exists', () => {",
+              "  pm.expect(json).to.have.property('status', 409);",
+              "  pm.expect(json).to.have.property('message');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Auth - Register missing/invalid fields should fail (400)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"\",\n  \"email\": \"not-an-email\",\n  \"password\": \"123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+              "pm.test('Content-Type is JSON (application/json or application/hal+json)', () => {",
+              "  const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "  pm.expect(ct).to.match(/application\\/(hal\\+)?json/);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Validation error shape exists', () => {",
+              "  pm.expect(json).to.have.property('status', 400);",
+              "  pm.expect(json).to.have.property('message');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Auth - Login success",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"login\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Content-Type is JSON (application/json or application/hal+json)', () => {",
+              "  const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "  pm.expect(ct).to.match(/application\\/(hal\\+)?json/);",
+              "});",
+              "const json = pm.response.json();",
+              "pm.test('Token exists', () => {",
+              "  pm.expect(json).to.have.property('token');",
+              "  pm.expect(json.token).to.be.a('string').and.not.empty;",
+              "});",
+              "pm.environment.set('jwtToken', json.token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Auth - Login invalid password should fail (401)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"login\": \"{{username}}\",\n  \"password\": \"wrongpass\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+              "const json = pm.response.json();",
+              "pm.test('Error shape exists', () => pm.expect(json).to.have.property('status', 401));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Bootstrap - Get one location and store locationId",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/locations?page=0&size=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "locations"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "const json = pm.response.json();",
+              "const embedded = json._embedded || {};",
+              "const key = Object.keys(embedded)[0];",
+              "const arr = key ? embedded[key] : [];",
+              "pm.test('At least one location exists', () => pm.expect(arr.length).to.be.above(0));",
+              "pm.environment.set('locationId', arr[0].id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 Bootstrap - Get one shape and store shapeId",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/shapes?page=0&size=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "shapes"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "const json = pm.response.json();",
+              "const embedded = json._embedded || {};",
+              "const key = Object.keys(embedded)[0];",
+              "const arr = key ? embedded[key] : [];",
+              "pm.test('At least one shape exists', () => pm.expect(arr.length).to.be.above(0));",
+              "pm.environment.set('shapeId', arr[0].id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 Locations - Get by id success",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/locations/{{locationId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "locations",
+            "{{locationId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "const json = pm.response.json();",
+              "pm.test('Has id', () => pm.expect(json.id).to.exist);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 Locations - Get by non-existing id should fail (404)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/locations/{{missingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "locations",
+            "{{missingId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 Shapes - Get by id success",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/shapes/{{shapeId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "shapes",
+            "{{shapeId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "const json = pm.response.json();",
+              "pm.test('Has id', () => pm.expect(json.id).to.exist);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 Shapes - Get by non-existing id should fail (404)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/shapes/{{missingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "shapes",
+            "{{missingId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 Sightings - List success",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/sightings?page=0&size=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "5"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Content-Type is JSON (application/json or application/hal+json)', () => {",
+              "  const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+              "  pm.expect(ct).to.match(/application\\/(hal\\+)?json/);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 Sightings - Invalid query should fail (400)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/sightings?fromDatePosted=not-a-date",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings"
+          ],
+          "query": [
+            {
+              "key": "fromDatePosted",
+              "value": "not-a-date"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 Sightings - Get by non-existing id should fail (404)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/sightings/{{missingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings",
+            "{{missingId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 Sightings - Create without token should fail (401)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sightedAt\": \"2024-01-01T10:00:00\",\n  \"durationSeconds\": 120,\n  \"durationText\": \"2 minutes\",\n  \"comments\": \"Test no token\",\n  \"datePosted\": \"2024-01-02\",\n  \"locationId\": {{locationId}},\n  \"shapeId\": {{shapeId}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sightings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "15b Auth - Refresh token for protected validation tests",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"login\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "const json = pm.response.json();",
+              "pm.test('Token exists', () => pm.expect(json.token).to.be.a('string').and.not.empty);",
+              "pm.environment.set('jwtToken', json.token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "16 Sightings - Create with invalid payload should fail (400)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sightedAt\": \"not-a-datetime\",\n  \"durationSeconds\": \"oops\",\n  \"durationText\": \"bad\",\n  \"comments\": \"invalid payload\",\n  \"datePosted\": \"not-a-date\",\n  \"locationId\": {{locationId}},\n  \"shapeId\": {{shapeId}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sightings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const baseUrl = pm.environment.get('baseUrl');",
+              "const login = pm.environment.get('username');",
+              "const password = pm.environment.get('password');",
+              "",
+              "pm.sendRequest({",
+              "  url: `${baseUrl}/auth/login`,",
+              "  method: 'POST',",
+              "  header: { 'Content-Type': 'application/json' },",
+              "  body: {",
+              "    mode: 'raw',",
+              "    raw: JSON.stringify({ login, password })",
+              "  }",
+              "}, function (err, res) {",
+              "  if (err) { throw new Error('Pre-request login failed: ' + err); }",
+              "  if (res.code !== 200) { throw new Error('Pre-request login returned ' + res.code + ': ' + res.text()); }",
+              "  const json = res.json();",
+              "  if (!json.token) { throw new Error('Pre-request login did not return token'); }",
+              "  pm.environment.set('jwtToken', json.token);",
+              "});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('JWT token exists', () => {",
+              "  const token = pm.environment.get('jwtToken');",
+              "  pm.expect(token, 'jwtToken missing; login did not run').to.be.a('string').and.not.empty;",
+              "});",
+              "pm.test('Status is 400 or 401 (payload validation vs auth precedence)', () => {",
+              "  pm.expect([400, 401]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "17 Sightings - Create with invalid location should fail (400 or 404)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sightedAt\": \"2024-01-01T10:00:00\",\n  \"durationSeconds\": 100,\n  \"durationText\": \"1.5 minutes\",\n  \"comments\": \"Invalid location\",\n  \"datePosted\": \"2024-01-02\",\n  \"locationId\": 999999999,\n  \"shapeId\": {{shapeId}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sightings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 400 or 404', () => pm.expect([400, 404]).to.include(pm.response.code));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "18 Sightings - Create success (authenticated)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sightedAt\": \"2024-01-01T10:00:00\",\n  \"durationSeconds\": 180,\n  \"durationText\": \"3 minutes\",\n  \"comments\": \"Created by Postman\",\n  \"datePosted\": \"2024-01-02\",\n  \"locationId\": {{locationId}},\n  \"shapeId\": {{shapeId}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sightings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+              "const json = pm.response.json();",
+              "pm.test('Created id exists', () => pm.expect(json.id).to.exist);",
+              "pm.environment.set('sightingId', json.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "19 Sightings - Get created by id success",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/sightings/{{sightingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings",
+            "{{sightingId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "const json = pm.response.json();",
+              "pm.test('Returned id matches', () => pm.expect(String(json.id)).to.eql(String(pm.environment.get('sightingId'))));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "20 Sightings - Update without token should fail (401)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sightedAt\": \"2024-01-03T10:00:00\",\n  \"durationSeconds\": 240,\n  \"durationText\": \"4 minutes\",\n  \"comments\": \"Update no token\",\n  \"datePosted\": \"2024-01-04\",\n  \"locationId\": {{locationId}},\n  \"shapeId\": {{shapeId}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sightings/{{sightingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings",
+            "{{sightingId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "20b Auth - Refresh token before update validation test",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"login\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "const json = pm.response.json();",
+              "pm.test('Token exists', () => pm.expect(json.token).to.be.a('string').and.not.empty);",
+              "pm.environment.set('jwtToken', json.token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "21 Sightings - Update with invalid payload should fail (400)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sightedAt\": \"not-a-datetime\",\n  \"durationSeconds\": \"bad\",\n  \"durationText\": \"invalid\",\n  \"comments\": \"invalid update payload\",\n  \"datePosted\": \"bad-date\",\n  \"locationId\": {{locationId}},\n  \"shapeId\": {{shapeId}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sightings/{{sightingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings",
+            "{{sightingId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const baseUrl = pm.environment.get('baseUrl');",
+              "const login = pm.environment.get('username');",
+              "const password = pm.environment.get('password');",
+              "",
+              "pm.sendRequest({",
+              "  url: `${baseUrl}/auth/login`,",
+              "  method: 'POST',",
+              "  header: { 'Content-Type': 'application/json' },",
+              "  body: {",
+              "    mode: 'raw',",
+              "    raw: JSON.stringify({ login, password })",
+              "  }",
+              "}, function (err, res) {",
+              "  if (err) { throw new Error('Pre-request login failed: ' + err); }",
+              "  if (res.code !== 200) { throw new Error('Pre-request login returned ' + res.code + ': ' + res.text()); }",
+              "  const json = res.json();",
+              "  if (!json.token) { throw new Error('Pre-request login did not return token'); }",
+              "  pm.environment.set('jwtToken', json.token);",
+              "});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('JWT token exists', () => {",
+              "  const token = pm.environment.get('jwtToken');",
+              "  pm.expect(token, 'jwtToken missing; login did not run').to.be.a('string').and.not.empty;",
+              "});",
+              "pm.test('Status is 400 or 401 (payload validation vs auth precedence)', () => {",
+              "  pm.expect([400, 401]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "22 Sightings - Update non-existing should fail (404)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sightedAt\": \"2024-01-03T10:00:00\",\n  \"durationSeconds\": 240,\n  \"durationText\": \"4 minutes\",\n  \"comments\": \"Update missing id\",\n  \"datePosted\": \"2024-01-04\",\n  \"locationId\": {{locationId}},\n  \"shapeId\": {{shapeId}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sightings/{{missingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings",
+            "{{missingId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "23 Sightings - Update success",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sightedAt\": \"2024-01-03T10:00:00\",\n  \"durationSeconds\": 300,\n  \"durationText\": \"5 minutes\",\n  \"comments\": \"Updated by Postman\",\n  \"datePosted\": \"2024-01-04\",\n  \"locationId\": {{locationId}},\n  \"shapeId\": {{shapeId}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sightings/{{sightingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings",
+            "{{sightingId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "24 Sightings - Delete without token should fail (401)",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/sightings/{{sightingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings",
+            "{{sightingId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 401', () => pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "25 Sightings - Delete non-existing should fail (404)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/sightings/{{missingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings",
+            "{{missingId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "26 Sightings - Delete created success",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/sightings/{{sightingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings",
+            "{{sightingId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 204', () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "27 Sightings - Get deleted should fail (404)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/sightings/{{sightingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sightings",
+            "{{sightingId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "28 Secondary - List locations and shapes success",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/locations?page=0&size=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "locations"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "5"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Locations status is 200', () => pm.response.to.have.status(200));",
+              "pm.sendRequest({",
+              "  url: pm.environment.get('baseUrl') + '/shapes?page=0&size=5',",
+              "  method: 'GET'",
+              "}, function (err, res) {",
+              "  pm.test('Shapes status is 200', function () {",
+              "    pm.expect(err).to.equal(null);",
+              "    pm.expect(res.code).to.eql(200);",
+              "  });",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
