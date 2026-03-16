@@ -39,19 +39,24 @@ jobs:
           SERVER_PORT: ${{ vars.SERVER_PORT }}
         run: docker compose up -d --build
 
-      - name: Wait for API and seed
+      - name: Wait for app healthcheck
         run: |
+          echo "Waiting for app container to become healthy..."
+
           for i in {1..60}; do
-            response=$(curl -fsS "http://localhost:${SERVER_PORT}/locations?page=0&size=1" || echo "")
-            count=$(echo "$response" | grep -c '"id"')
-            if [ "$count" -gt 0 ]; then
-              echo "Seed complete!"
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' $(docker compose ps -q app))
+
+            if [ "$STATUS" = "healthy" ]; then
+              echo "App is healthy!"
               exit 0
             fi
-            echo "Waiting for seed..."
-            sleep 10
+
+            echo "Current status: $STATUS"
+            sleep 5
           done
-          docker compose logs app
+
+          echo "App did not become healthy in time"
+          docker compose logs
           exit 1
         env:
           SERVER_PORT: ${{ vars.SERVER_PORT }}
