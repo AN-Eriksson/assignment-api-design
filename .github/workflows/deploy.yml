@@ -42,7 +42,7 @@ jobs:
       - name: Wait for API and seed
         run: |
           for i in {1..60}; do
-            response=$(curl -fsS "http://localhost:${{ vars.SERVER_PORT }}/locations?page=0&size=1" || echo "")
+            response=$(curl -fsS "http://localhost:${SERVER_PORT}/locations?page=0&size=1" || echo "")
             count=$(echo "$response" | grep -c '"id"')
             if [ "$count" -gt 0 ]; then
               echo "Seed complete!"
