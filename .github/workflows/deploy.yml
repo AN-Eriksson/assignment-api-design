@@ -58,8 +58,6 @@ jobs:
           echo "App did not become healthy in time"
           docker compose logs
           exit 1
-        env:
-          SERVER_PORT: ${{ vars.SERVER_PORT }}
 
       - name: Print app logs on failure
         if: failure()
