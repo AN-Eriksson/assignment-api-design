@@ -16,6 +16,8 @@ import me.andreaseriksson.ufoapi.dto.SightingFilter;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.CollectionModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -85,7 +87,7 @@ public class SightingController {
                         linkTo(SightingController.class).withRel("sightings")
                 ))
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new NoSuchElementException("Sighting not found: " + id));
     }
 
     @PostMapping
@@ -113,13 +115,13 @@ public class SightingController {
                         linkTo(SightingController.class).withRel("sightings")
                 ))
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new NoSuchElementException("Sighting not found: " + id));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!service.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            throw new NoSuchElementException("Sighting not found: " + id);
         }
         service.deleteById(id);
         return ResponseEntity.noContent().build();

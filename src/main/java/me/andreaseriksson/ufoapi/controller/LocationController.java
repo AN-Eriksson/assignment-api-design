@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -58,7 +59,7 @@ public class LocationController {
                         linkTo(LocationController.class).withRel("locations")
                 ))
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new NoSuchElementException("Sighting not found: " + id));
     }
 
     private Pageable enforcePageLimits(Pageable pageable) {
