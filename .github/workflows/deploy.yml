@@ -53,7 +53,12 @@ jobs:
           done
           docker compose logs app
           exit 1
-      
+        env:
+          SERVER_PORT: ${{ vars.SERVER_PORT }}
+
+      - name: Print app logs on failure
+        if: failure()
+        run: docker compose logs app
 
       - name: Run Newman
         run: newman run postman/ufoapi.postman_collection.json -e postman/ci.postman_environment.json
