@@ -42,7 +42,7 @@ public class Sighting {
         this.shape = shape;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
