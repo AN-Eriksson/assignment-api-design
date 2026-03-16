@@ -5,12 +5,18 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_users_username", columnNames = "username"),
+                @UniqueConstraint(name = "uk_users_email",    columnNames = "email")
+        }
+)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String username;
