@@ -62,8 +62,11 @@ public class SightingController {
                 .getContent();
 
         return CollectionModel.of(models,
-                linkTo(SightingController.class).withSelfRel()
+                linkTo(SightingController.class).withSelfRel(),
+                linkTo(ShapeController.class).withRel("shapes"),
+                linkTo(LocationController.class).withRel("locations")
         );
+
     }
 
     private Pageable enforcePageLimits(Pageable pageable) {

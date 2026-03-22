@@ -45,8 +45,11 @@ public class LocationController {
                 ))
                 .getContent();
 
-        return CollectionModel.of(models,
-                linkTo(LocationController.class).withSelfRel()
+        return CollectionModel.of(
+                models,
+                linkTo(LocationController.class).withSelfRel(),
+                linkTo(ShapeController.class).withRel("shapes"),
+                linkTo(SightingController.class).withRel("sightings")
         );
     }
 

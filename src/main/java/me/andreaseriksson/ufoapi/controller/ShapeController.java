@@ -45,8 +45,11 @@ public class ShapeController {
                 ))
                 .getContent();
 
-        return CollectionModel.of(models,
-                linkTo(ShapeController.class).withSelfRel()
+        return CollectionModel.of(
+                models,
+                linkTo(ShapeController.class).withSelfRel(),
+                linkTo(LocationController.class).withRel("locations"),
+                linkTo(SightingController.class).withRel("sightings")
         );
     }
 
