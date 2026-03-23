@@ -87,7 +87,9 @@ public class SightingController {
                 .map(SightingMapper::toResponse)
                 .map(dto -> EntityModel.of(dto,
                         linkTo(methodOn(SightingController.class).getById(id)).withSelfRel(),
-                        linkTo(SightingController.class).withRel("sightings")
+                        linkTo(SightingController.class).withRel("sightings"),
+                        linkTo(methodOn(ShapeController.class).getById(dto.getShapeId())).withRel("shape"),
+                        linkTo(methodOn(LocationController.class).getById(dto.getLocationId())).withRel("location")
                 ))
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NoSuchElementException("Sighting not found: " + id));
@@ -101,7 +103,9 @@ public class SightingController {
 
         EntityModel<SightingResponse> model = EntityModel.of(dto,
                 linkTo(methodOn(SightingController.class).getById(newId)).withSelfRel(),
-                linkTo(SightingController.class).withRel("sightings")
+                linkTo(SightingController.class).withRel("sightings"),
+                linkTo(methodOn(ShapeController.class).getById(dto.getShapeId())).withRel("shape"),
+                linkTo(methodOn(LocationController.class).getById(dto.getLocationId())).withRel("location")
         );
 
         return ResponseEntity
@@ -115,7 +119,9 @@ public class SightingController {
                 .map(SightingMapper::toResponse)
                 .map(dto -> EntityModel.of(dto,
                         linkTo(methodOn(SightingController.class).getById(id)).withSelfRel(),
-                        linkTo(SightingController.class).withRel("sightings")
+                        linkTo(SightingController.class).withRel("sightings"),
+                        linkTo(methodOn(ShapeController.class).getById(dto.getShapeId())).withRel("shape"),
+                        linkTo(methodOn(LocationController.class).getById(dto.getLocationId())).withRel("location")
                 ))
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NoSuchElementException("Sighting not found: " + id));

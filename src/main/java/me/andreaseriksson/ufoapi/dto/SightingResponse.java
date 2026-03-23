@@ -19,4 +19,12 @@ public record SightingResponse(
         String shapeName,            // csv: shape
         Long locationId,             // extra (not csv)
         Long shapeId                 // extra (not csv)
-) {}
+) {
+    public Long getShapeId() {
+        return shapeId;
+    }
+
+    public Long getLocationId() {
+        return locationId;
+    }
+}
