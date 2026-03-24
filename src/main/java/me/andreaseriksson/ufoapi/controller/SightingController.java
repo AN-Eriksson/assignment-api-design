@@ -1,5 +1,9 @@
 package me.andreaseriksson.ufoapi.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import me.andreaseriksson.ufoapi.dto.CreateSightingRequest;
 import me.andreaseriksson.ufoapi.dto.SightingMapper;
 import me.andreaseriksson.ufoapi.dto.SightingResponse;
@@ -14,12 +18,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 import me.andreaseriksson.ufoapi.dto.SightingFilter;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.CollectionModel;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
@@ -32,6 +38,20 @@ public class SightingController {
         this.service = service;
     }
 
+    @Operation(
+            summary = "Get all sightings",
+            description = "Returns a list of UFO sightings with optional filters and paging. Sorting is not supported: results are always sorted by 'id' ascending, regardless of any 'sort' parameter.",
+            responses = @ApiResponse(
+                    responseCode = "200",
+                    description = "List of sightings",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = "{\n  \"_embedded\": {\n    \"sightingResponseList\": [\n      {\n        \"_links\": {\n          \"self\": { \"href\": \"http://localhost:8080/sightings/1\" }\n        },\n        \"id\": 1,\n        \"sightedAt\": \"1949-10-10T20:30:00\",\n        \"durationSeconds\": 2700,\n        \"durationText\": \"45 minutes\",\n        \"comments\": \"This event took place in early fall around 1949-50. It occurred after a Boy Scout meeting in the Baptist Church. The Baptist Church sit\",\n        \"datePosted\": \"2004-04-27\",\n        \"city\": \"san marcos\",\n        \"state\": \"tx\",\n        \"countryCode\": \"us\",\n        \"latitude\": 29.88,\n        \"longitude\": -97.94,\n        \"shapeName\": \"cylinder\",\n        \"locationId\": 1,\n        \"shapeId\": 1\n      }\n    ]\n  },\n  \"_links\": {\n    \"self\": { \"href\": \"http://localhost:8080/sightings\" },\n    \"shapes\": { \"href\": \"http://localhost:8080/shapes\" },\n    \"locations\": { \"href\": \"http://localhost:8080/locations\" }\n  }\n}"
+                            )
+                    )
+            )
+    )
     @GetMapping
     public CollectionModel<EntityModel<SightingResponse>> getAll(
             @RequestParam(required = false) String city,
@@ -48,13 +68,20 @@ public class SightingController {
     ) {
         Pageable safePageable = enforcePageLimits(pageable);
 
+        // Always use fixed sort by id ascending, ignoring any user-supplied sort
+        Pageable fixedSortPageable = PageRequest.of(
+                safePageable.getPageNumber(),
+                safePageable.getPageSize(),
+                Sort.by(Sort.Direction.ASC, "id")
+        );
+
         SightingFilter filter = new SightingFilter(
                 city, state, countryCode, shapeName,
                 minDurationSeconds, maxDurationSeconds,
                 fromDatePosted, toDatePosted
         );
 
-        List<EntityModel<SightingResponse>> models = service.findAll(safePageable, filter)
+        List<EntityModel<SightingResponse>> models = service.findAll(fixedSortPageable, filter)
                 .map(SightingMapper::toResponse)
                 .map(dto -> EntityModel.of(dto,
                         linkTo(methodOn(SightingController.class).getById(dto.id())).withSelfRel()
@@ -81,6 +108,58 @@ public class SightingController {
         return PageRequest.of(safePage, safeSize, sort);
     }
 
+    @Operation(
+            summary = "Get a sighting by ID",
+            description = "Returns a single UFO sighting by its unique ID. The response includes HATEOAS links. If the sighting does not exist, a 404 error is returned.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sighting found",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"id\": 1,\n" +
+                                                    "  \"sightedAt\": \"1949-10-10T20:30:00\",\n" +
+                                                    "  \"durationSeconds\": 2700,\n" +
+                                                    "  \"durationText\": \"45 minutes\",\n" +
+                                                    "  \"comments\": \"This event took place in early fall around 1949-50. It occurred after a Boy Scout meeting in the Baptist Church. The Baptist Church sit\",\n" +
+                                                    "  \"datePosted\": \"2004-04-27\",\n" +
+                                                    "  \"city\": \"san marcos\",\n" +
+                                                    "  \"state\": \"tx\",\n" +
+                                                    "  \"countryCode\": \"us\",\n" +
+                                                    "  \"latitude\": 29.88,\n" +
+                                                    "  \"longitude\": -97.94,\n" +
+                                                    "  \"shapeName\": \"cylinder\",\n" +
+                                                    "  \"locationId\": 1,\n" +
+                                                    "  \"shapeId\": 1,\n" +
+                                                    "  \"_links\": {\n" +
+                                                    "    \"self\": { \"href\": \"http://localhost:8080/sightings/1\" },\n" +
+                                                    "    \"sightings\": { \"href\": \"http://localhost:8080/sightings\" },\n" +
+                                                    "    \"shape\": { \"href\": \"http://localhost:8080/shapes/1\" },\n" +
+                                                    "    \"location\": { \"href\": \"http://localhost:8080/locations/1\" }\n" +
+                                                    "  }\n" +
+                                                    "}"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Sighting not found",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"timestamp\": \"2026-03-24T19:00:00.000+00:00\",\n" +
+                                                    "  \"status\": 404,\n" +
+                                                    "  \"error\": \"Not Found\",\n" +
+                                                    "  \"message\": \"Sighting not found: 123\"\n" +
+                                                    "}"
+                                    )
+                            )
+                    )
+            }
+    )
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<SightingResponse>> getById(@PathVariable Long id) {
         return service.findById(id)
@@ -95,6 +174,96 @@ public class SightingController {
                 .orElseThrow(() -> new NoSuchElementException("Sighting not found: " + id));
     }
 
+    @Operation(
+            summary = "Create a new sighting",
+            description = "Creates a new UFO sighting. The request body must contain all required fields. Returns the created sighting with HATEOAS links. If the input is invalid, a 400 error is returned.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = "{\n" +
+                                            "  \"sightedAt\": \"2026-03-24T18:57:28.218Z\",\n" +
+                                            "  \"durationSeconds\": 2700,\n" +
+                                            "  \"durationText\": \"45 minutes\",\n" +
+                                            "  \"comments\": \"Saw a bright light in the sky.\",\n" +
+                                            "  \"datePosted\": \"2026-03-24\",\n" +
+                                            "  \"city\": \"san marcos\",\n" +
+                                            "  \"state\": \"tx\",\n" +
+                                            "  \"countryCode\": \"us\",\n" +
+                                            "  \"latitude\": 29.88,\n" +
+                                            "  \"longitude\": -97.94,\n" +
+                                            "  \"shapeName\": \"cylinder\",\n" +
+                                            "  \"locationId\": 1,\n" +
+                                            "  \"shapeId\": 1\n" +
+                                            "}"
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Sighting created",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"id\": 42,\n" +
+                                                    "  \"sightedAt\": \"2026-03-24T18:57:28.218Z\",\n" +
+                                                    "  \"durationSeconds\": 2700,\n" +
+                                                    "  \"durationText\": \"45 minutes\",\n" +
+                                                    "  \"comments\": \"Saw a bright light in the sky.\",\n" +
+                                                    "  \"datePosted\": \"2026-03-24\",\n" +
+                                                    "  \"city\": \"san marcos\",\n" +
+                                                    "  \"state\": \"tx\",\n" +
+                                                    "  \"countryCode\": \"us\",\n" +
+                                                    "  \"latitude\": 29.88,\n" +
+                                                    "  \"longitude\": -97.94,\n" +
+                                                    "  \"shapeName\": \"cylinder\",\n" +
+                                                    "  \"locationId\": 1,\n" +
+                                                    "  \"shapeId\": 1,\n" +
+                                                    "  \"_links\": {\n" +
+                                                    "    \"self\": { \"href\": \"http://localhost:8080/sightings/42\" },\n" +
+                                                    "    \"sightings\": { \"href\": \"http://localhost:8080/sightings\" },\n" +
+                                                    "    \"shape\": { \"href\": \"http://localhost:8080/shapes/1\" },\n" +
+                                                    "    \"location\": { \"href\": \"http://localhost:8080/locations/1\" }\n" +
+                                                    "  }\n" +
+                                                    "}"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"timestamp\": \"2026-03-24T19:00:00.000+00:00\",\n" +
+                                                    "  \"status\": 400,\n" +
+                                                    "  \"error\": \"Bad Request\",\n" +
+                                                    "  \"message\": \"Validation failed for object: 'createSightingRequest'. Field error in object...\"\n" +
+                                                    "}"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - authentication required",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"timestamp\": \"2026-03-24T19:00:00.000+00:00\",\n" +
+                                                    "  \"status\": 401,\n" +
+                                                    "  \"error\": \"Unauthorized\",\n" +
+                                                    "  \"message\": \"Authentication required or token is invalid\"\n" +
+                                                    "}"
+                                    )
+                            )
+                    )
+            }
+    )
     @PostMapping
     public ResponseEntity<EntityModel<SightingResponse>> create(@RequestBody CreateSightingRequest req) {
         Sighting created = service.create(req);
@@ -113,6 +282,111 @@ public class SightingController {
                 .body(model);
     }
 
+    @Operation(
+            summary = "Update a sighting by ID",
+            description = "Updates an existing UFO sighting by its unique ID. Requires authentication. Returns the updated sighting with HATEOAS links. If the input is invalid, a 400 error is returned. If the sighting does not exist, a 404 error is returned. If not authenticated, a 401 error is returned.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = "{\n" +
+                                            "  \"sightedAt\": \"2026-03-24T18:57:28.218Z\",\n" +
+                                            "  \"durationSeconds\": 2700,\n" +
+                                            "  \"durationText\": \"45 minutes\",\n" +
+                                            "  \"comments\": \"Updated sighting details.\",\n" +
+                                            "  \"datePosted\": \"2026-03-24\",\n" +
+                                            "  \"city\": \"san marcos\",\n" +
+                                            "  \"state\": \"tx\",\n" +
+                                            "  \"countryCode\": \"us\",\n" +
+                                            "  \"latitude\": 29.88,\n" +
+                                            "  \"longitude\": -97.94,\n" +
+                                            "  \"shapeName\": \"cylinder\",\n" +
+                                            "  \"locationId\": 1,\n" +
+                                            "  \"shapeId\": 1\n" +
+                                            "}"
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sighting updated",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"id\": 42,\n" +
+                                                    "  \"sightedAt\": \"2026-03-24T18:57:28.218Z\",\n" +
+                                                    "  \"durationSeconds\": 2700,\n" +
+                                                    "  \"durationText\": \"45 minutes\",\n" +
+                                                    "  \"comments\": \"Updated sighting details.\",\n" +
+                                                    "  \"datePosted\": \"2026-03-24\",\n" +
+                                                    "  \"city\": \"san marcos\",\n" +
+                                                    "  \"state\": \"tx\",\n" +
+                                                    "  \"countryCode\": \"us\",\n" +
+                                                    "  \"latitude\": 29.88,\n" +
+                                                    "  \"longitude\": -97.94,\n" +
+                                                    "  \"shapeName\": \"cylinder\",\n" +
+                                                    "  \"locationId\": 1,\n" +
+                                                    "  \"shapeId\": 1,\n" +
+                                                    "  \"_links\": {\n" +
+                                                    "    \"self\": { \"href\": \"http://localhost:8080/sightings/42\" },\n" +
+                                                    "    \"sightings\": { \"href\": \"http://localhost:8080/sightings\" },\n" +
+                                                    "    \"shape\": { \"href\": \"http://localhost:8080/shapes/1\" },\n" +
+                                                    "    \"location\": { \"href\": \"http://localhost:8080/locations/1\" }\n" +
+                                                    "  }\n" +
+                                                    "}"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"timestamp\": \"2026-03-24T19:00:00.000+00:00\",\n" +
+                                                    "  \"status\": 400,\n" +
+                                                    "  \"error\": \"Bad Request\",\n" +
+                                                    "  \"message\": \"Validation failed for object: 'createSightingRequest'. Field error in object...\"\n" +
+                                                    "}"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Sighting not found",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"timestamp\": \"2026-03-24T19:00:00.000+00:00\",\n" +
+                                                    "  \"status\": 404,\n" +
+                                                    "  \"error\": \"Not Found\",\n" +
+                                                    "  \"message\": \"Sighting not found: 42\"\n" +
+                                                    "}"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - authentication required",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"timestamp\": \"2026-03-24T19:00:00.000+00:00\",\n" +
+                                                    "  \"status\": 401,\n" +
+                                                    "  \"error\": \"Unauthorized\",\n" +
+                                                    "  \"message\": \"Authentication required or token is invalid\"\n" +
+                                                    "}"
+                                    )
+                            )
+                    )
+            }
+    )
     @PutMapping("/{id}")
     public ResponseEntity<EntityModel<SightingResponse>> update(@PathVariable Long id, @RequestBody CreateSightingRequest req) {
         return service.update(id, req)
@@ -127,6 +401,46 @@ public class SightingController {
                 .orElseThrow(() -> new NoSuchElementException("Sighting not found: " + id));
     }
 
+    @Operation(
+            summary = "Delete a sighting by ID",
+            description = "Deletes an existing UFO sighting by its unique ID. Requires authentication. Returns 204 No Content on success. If the sighting does not exist, a 404 error is returned. If not authenticated, a 401 error is returned.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Sighting deleted"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Sighting not found",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"timestamp\": \"2026-03-24T19:00:00.000+00:00\",\n" +
+                                                    "  \"status\": 404,\n" +
+                                                    "  \"error\": \"Not Found\",\n" +
+                                                    "  \"message\": \"Sighting not found: 42\"\n" +
+                                                    "}"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - authentication required",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"timestamp\": \"2026-03-24T19:00:00.000+00:00\",\n" +
+                                                    "  \"status\": 401,\n" +
+                                                    "  \"error\": \"Unauthorized\",\n" +
+                                                    "  \"message\": \"Authentication required or token is invalid\"\n" +
+                                                    "}"
+                                    )
+                            )
+                    )
+            }
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!service.existsById(id)) {
@@ -136,6 +450,37 @@ public class SightingController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+            summary = "Get total count of sightings",
+            description = "Returns the total number of UFO sightings in the database. Requires authentication. If not authenticated, a 401 error is returned.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Total count of sightings",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = "12345"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - authentication required",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = "{\n" +
+                                                    "  \"timestamp\": \"2026-03-24T19:00:00.000+00:00\",\n" +
+                                                    "  \"status\": 401,\n" +
+                                                    "  \"error\": \"Unauthorized\",\n" +
+                                                    "  \"message\": \"Authentication required or token is invalid\"\n" +
+                                                    "}"
+                                    )
+                            )
+                    )
+            }
+    )
     @GetMapping("/count")
     public long count() {
         return service.count();
