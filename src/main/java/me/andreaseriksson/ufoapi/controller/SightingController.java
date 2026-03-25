@@ -47,7 +47,7 @@ public class SightingController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = "{\n  \"_embedded\": {\n    \"sightingResponseList\": [\n      {\n        \"_links\": {\n          \"self\": { \"href\": \"http://localhost:8080/sightings/1\" }\n        },\n        \"id\": 1,\n        \"sightedAt\": \"1949-10-10T20:30:00\",\n        \"durationSeconds\": 2700,\n        \"durationText\": \"45 minutes\",\n        \"comments\": \"This event took place in early fall around 1949-50. It occurred after a Boy Scout meeting in the Baptist Church. The Baptist Church sit\",\n        \"datePosted\": \"2004-04-27\",\n        \"city\": \"san marcos\",\n        \"state\": \"tx\",\n        \"countryCode\": \"us\",\n        \"latitude\": 29.88,\n        \"longitude\": -97.94,\n        \"shapeName\": \"cylinder\",\n        \"locationId\": 1,\n        \"shapeId\": 1\n      }\n    ]\n  },\n  \"_links\": {\n    \"self\": { \"href\": \"http://localhost:8080/sightings\" },\n    \"shapes\": { \"href\": \"http://localhost:8080/shapes\" },\n    \"locations\": { \"href\": \"http://localhost:8080/locations\" }\n  }\n}"
+                                    value = "{\n  \"_embedded\": {\n    \"sightingResponseList\": [\n      {\n        \"_links\": {\n          \"self\": { \"href\": \"/sightings/1\" }\n        },\n        \"id\": 1,\n        \"sightedAt\": \"1949-10-10T20:30:00\",\n        \"durationSeconds\": 2700,\n        \"durationText\": \"45 minutes\",\n        \"comments\": \"This event took place in early fall around 1949-50. It occurred after a Boy Scout meeting in the Baptist Church. The Baptist Church sit\",\n        \"datePosted\": \"2004-04-27\",\n        \"city\": \"san marcos\",\n        \"state\": \"tx\",\n        \"countryCode\": \"us\",\n        \"latitude\": 29.88,\n        \"longitude\": -97.94,\n        \"shapeName\": \"cylinder\",\n        \"locationId\": 1,\n        \"shapeId\": 1\n      }\n    ]\n  },\n  \"_links\": {\n    \"self\": { \"href\": \"/sightings\" },\n    \"shapes\": { \"href\": \"/shapes\" },\n    \"locations\": { \"href\": \"/locations\" }\n  }\n}"
                             )
                     )
             )
@@ -134,10 +134,10 @@ public class SightingController {
                                                     "  \"locationId\": 1,\n" +
                                                     "  \"shapeId\": 1,\n" +
                                                     "  \"_links\": {\n" +
-                                                    "    \"self\": { \"href\": \"http://localhost:8080/sightings/1\" },\n" +
-                                                    "    \"sightings\": { \"href\": \"http://localhost:8080/sightings\" },\n" +
-                                                    "    \"shape\": { \"href\": \"http://localhost:8080/shapes/1\" },\n" +
-                                                    "    \"location\": { \"href\": \"http://localhost:8080/locations/1\" }\n" +
+                                                    "    \"self\": { \"href\": \"/sightings/1\" },\n" +
+                                                    "    \"sightings\": { \"href\": \"/sightings\" },\n" +
+                                                    "    \"shape\": { \"href\": \"/shapes/1\" },\n" +
+                                                    "    \"location\": { \"href\": \"/locations/1\" }\n" +
                                                     "  }\n" +
                                                     "}"
                                     )
@@ -223,10 +223,10 @@ public class SightingController {
                                                     "  \"locationId\": 1,\n" +
                                                     "  \"shapeId\": 1,\n" +
                                                     "  \"_links\": {\n" +
-                                                    "    \"self\": { \"href\": \"http://localhost:8080/sightings/42\" },\n" +
-                                                    "    \"sightings\": { \"href\": \"http://localhost:8080/sightings\" },\n" +
-                                                    "    \"shape\": { \"href\": \"http://localhost:8080/shapes/1\" },\n" +
-                                                    "    \"location\": { \"href\": \"http://localhost:8080/locations/1\" }\n" +
+                                                    "    \"self\": { \"href\": \"/sightings/42\" },\n" +
+                                                    "    \"sightings\": { \"href\": \"/sightings\" },\n" +
+                                                    "    \"shape\": { \"href\": \"/shapes/1\" },\n" +
+                                                    "    \"location\": { \"href\": \"/locations/1\" }\n" +
                                                     "  }\n" +
                                                     "}"
                                     )
@@ -331,10 +331,10 @@ public class SightingController {
                                                     "  \"locationId\": 1,\n" +
                                                     "  \"shapeId\": 1,\n" +
                                                     "  \"_links\": {\n" +
-                                                    "    \"self\": { \"href\": \"http://localhost:8080/sightings/42\" },\n" +
-                                                    "    \"sightings\": { \"href\": \"http://localhost:8080/sightings\" },\n" +
-                                                    "    \"shape\": { \"href\": \"http://localhost:8080/shapes/1\" },\n" +
-                                                    "    \"location\": { \"href\": \"http://localhost:8080/locations/1\" }\n" +
+                                                    "    \"self\": { \"href\": \"/sightings/42\" },\n" +
+                                                    "    \"sightings\": { \"href\": \"/sightings\" },\n" +
+                                                    "    \"shape\": { \"href\": \"/shapes/1\" },\n" +
+                                                    "    \"location\": { \"href\": \"/locations/1\" }\n" +
                                                     "  }\n" +
                                                     "}"
                                     )
