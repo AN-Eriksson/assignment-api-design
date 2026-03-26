@@ -167,16 +167,20 @@ Used for API testing and automated test runs. Chosen for its popularity, ease of
 
 Used for containerizing the application and its dependencies. Chosen for portability, consistency across environments, and ease of deployment.
 
-
 ## Reflection
 
-*What was hard? What did you learn? What would you do differently?*
+**What was hard?**
 
+Getting authentication and error handling right took some trial and error. Making sure the API was both secure and easy to use was a challenge.
 
+**What did you learn?**
 
-## Acknowledgements
+I learned how to use JWT for stateless authentication, how HATEOAS can make APIs easier to explore, and how important clear documentation and consistent error responses are.
 
-*Resources, attributions, or shoutouts.*
+**What would you do differently?**
+
+Next time, I’d plan the error handling and documentation earlier, and set up more automated tests from the start. I might also look into OAuth2 if I needed more advanced authentication.
+I would also separate the Swagger documentation from the Controller-classes so they get less bloated.
 
 ## Requirements
 
@@ -186,37 +190,29 @@ See [all requirements in Issues](../../issues/). Close issues as you implement t
 
 | Requirement | Issue | Status |
 |---|---|---|
-| Data acquisition — choose and document a dataset (1000+ data points) | [#1](../../issues/1) | :white_large_square: |
-| Full CRUD for primary resource, read-only for secondary resources | [#2](../../issues/2) | :white_large_square: |
-| JWT authentication for write operations | [#3](../../issues/3) | :white_large_square: |
-| Error handling (400, 401, 404 with consistent format) | [#4](../../issues/4) | :white_large_square: |
-| Filtering and pagination for large result sets | [#17](../../issues/17) | :white_large_square: |
+| Data acquisition — choose and document a dataset (1000+ data points) | [#1](../../issues/1) | ✅ |
+| Full CRUD for primary resource, read-only for secondary resources | [#2](../../issues/2) | ✅ |
+| JWT authentication for write operations | [#3](../../issues/3) | ✅ |
+| Error handling (400, 401, 404 with consistent format) | [#4](../../issues/4) | ✅ |
+| Filtering and pagination for large result sets | [#17](../../issues/17) | ✅|
 
 ### Functional Requirements — REST
 
 | Requirement | Issue | Status |
 |---|---|---|
-| RESTful endpoints with proper HTTP methods and status codes | [#12](../../issues/12) | :white_large_square: |
-| HATEOAS (hypermedia links in responses) | [#13](../../issues/13) | :white_large_square: |
-
-### Functional Requirements — GraphQL
-
-| Requirement | Issue | Status |
-|---|---|---|
-| Queries and mutations via single `/graphql` endpoint | [#14](../../issues/14) | :white_large_square: |
-| At least one nested query | [#15](../../issues/15) | :white_large_square: |
-| GraphQL Playground available | [#16](../../issues/16) | :white_large_square: |
+| RESTful endpoints with proper HTTP methods and status codes | [#12](../../issues/12) | ✅ |
+| HATEOAS (hypermedia links in responses) | [#13](../../issues/13) | ✅ |
 
 ### Non-Functional Requirements
 
 | Requirement | Issue | Status |
 |---|---|---|
-| API documentation (Swagger/OpenAPI or Postman) | [#6](../../issues/6) | :white_large_square: |
-| Automated Postman tests (20+ test cases, success + failure) | [#7](../../issues/7) | :white_large_square: |
-| CI/CD pipeline running tests on every commit/MR | [#8](../../issues/8) | :white_large_square: |
-| Seed script for sample data | [#5](../../issues/5) | :white_large_square: |
-| Code quality (consistent standard, modular, documented) | [#10](../../issues/10) | :white_large_square: |
-| Deployed and publicly accessible | [#9](../../issues/9) | :white_large_square: |
-| Peer review reflection submitted on merge request | [#11](../../issues/11) | :white_large_square: |
+| API documentation (Swagger/OpenAPI or Postman) | [#6](../../issues/6) | ✅ |
+| Automated Postman tests (20+ test cases, success + failure) | [#7](../../issues/7) | ✅ |
+| CI/CD pipeline running tests on every commit/MR | [#8](../../issues/8) | ✅ |
+| Seed script for sample data | [#5](../../issues/5) | ✅ |
+| Code quality (consistent standard, modular, documented) | [#10](../../issues/10) | ✅ |
+| Deployed and publicly accessible | [#9](../../issues/9) | ✅ |
+| Peer review reflection submitted on merge request | [#11](../../issues/11) |  |
 
 
