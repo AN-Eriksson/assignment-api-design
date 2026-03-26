@@ -15,6 +15,15 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service for managing UFO sighting records.
+ *
+ * Provides methods to create, update, retrieve, filter, and delete sightings.
+ * Supports batch saving, paging, and dynamic filtering using SightingFilter and JPA Specifications.
+ * Coordinates with LocationService and ShapeService to validate and associate related entities.
+ *
+ * Acts as an intermediary between the SightingRepository and higher-level application logic.
+ */
 @Service
 public class SightingService {
 

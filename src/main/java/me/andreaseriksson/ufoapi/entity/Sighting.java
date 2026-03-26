@@ -5,6 +5,14 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * JPA entity representing a UFO sighting record.
+ *
+ * Contains details about a sighting, including the date and time it occurred,
+ * duration, comments, date posted, and references to the associated location and shape.
+ *
+ * Used to persist and retrieve sighting data from the database.
+ */
 @Entity
 @Table(name = "sightings")
 public class Sighting {

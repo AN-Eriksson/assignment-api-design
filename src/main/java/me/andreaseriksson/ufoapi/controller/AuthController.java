@@ -17,6 +17,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * REST controller for user authentication.
+ *
+ * Provides endpoints for user registration and login:
+ * - POST /auth/register: Register a new user account. Publicly accessible.
+ * - POST /auth/login: Authenticate a user by username or email and return a JWT token. Publicly accessible.
+ *
+ * Uses AuthService to handle authentication logic.
+ * All endpoints include detailed OpenAPI documentation and example responses.
+ */
 @RestController
 @RequestMapping("/auth")
 @Tag(

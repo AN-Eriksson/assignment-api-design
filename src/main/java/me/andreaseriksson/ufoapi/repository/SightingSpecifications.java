@@ -8,6 +8,15 @@ import jakarta.persistence.criteria.JoinType;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility class providing JPA Specifications for filtering Sighting entities.
+ *
+ * Contains a static method to build a dynamic Specification based on the fields
+ * in a SightingFilter. Supports filtering by city, state, country code, shape name,
+ * duration range, and date posted range.
+ *
+ * Used to enable flexible and composable queries for sightings in the repository layer.
+ */
 public final class SightingSpecifications {
 
     private SightingSpecifications() {

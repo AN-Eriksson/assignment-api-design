@@ -9,6 +9,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Configures Spring Security for the application.
+ *
+ * Sets up stateless JWT authentication, custom authentication and access denied handlers,
+ * and defines authorization rules for all API endpoints.
+ *
+ * Registers the JwtAuthenticationFilter in the security filter chain and specifies which
+ * endpoints require authentication.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {

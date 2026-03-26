@@ -2,6 +2,14 @@ package me.andreaseriksson.ufoapi.entity;
 
 import jakarta.persistence.*;
 
+/**
+ * JPA entity representing an application user.
+ *
+ * Contains user credentials and identity information, including a unique username,
+ * unique email, and a hashed password.
+ *
+ * Used for authentication and authorization within the application.
+ */
 @Entity
 @Table(
         name = "users",

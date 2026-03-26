@@ -13,6 +13,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * Servlet filter that processes incoming HTTP requests to authenticate users based on JWT tokens.
+ * This filter checks for the presence of an Authorization header with a Bearer token.
+ * If a valid JWT is found, it extracts the username and sets the authentication in the
+ * Spring Security context for the duration of the request.
+ * Intended for stateless authentication setups.
+ *
+ * Usage: Registered as a Spring component and added to the security filter chain.
+ * Dependencies: Relies on JwtService for token validation and username extraction.
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 

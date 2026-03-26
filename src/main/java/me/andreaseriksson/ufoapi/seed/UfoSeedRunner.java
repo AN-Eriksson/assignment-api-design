@@ -28,6 +28,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * CommandLineRunner that seeds the database with UFO sighting data from a CSV file.
+ *
+ * On application startup, reads the ufo_sightings.csv file from the classpath and imports
+ * countries, shapes, locations, and sightings into the database if no sightings exist.
+ * Uses batch inserts and caching to optimize performance and avoid duplicate entries.
+ *
+ * Skips import if the database is already seeded.
+ */
 @Component
 public class UfoSeedRunner implements CommandLineRunner {
 

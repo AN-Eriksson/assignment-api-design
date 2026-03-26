@@ -27,6 +27,15 @@ import java.util.NoSuchElementException;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * REST controller for read-only access to UFO shape types.
+ *
+ * Provides endpoints to list all shapes with paging and to retrieve a single shape by ID.
+ * All endpoints are public (no authentication required) and support HATEOAS links.
+ * Sorting is always by 'id' in ascending order; user-supplied sort parameters are ignored.
+ *
+ * No create, update, or delete operations are available for shapes.
+ */
 @RestController
 @RequestMapping("/shapes")
 @Tag(

@@ -12,6 +12,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service for handling user authentication and registration logic.
+ *
+ * Provides methods to register new users and authenticate existing users.
+ * Handles password hashing, duplicate user checks, and JWT token generation.
+ *
+ * Throws DuplicateResourceException for duplicate usernames or emails,
+ * and InvalidCredentialsException for failed login attempts.
+ */
 @Service
 public class AuthService {
 

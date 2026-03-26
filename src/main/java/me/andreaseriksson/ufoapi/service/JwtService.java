@@ -11,6 +11,14 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+/**
+ * Service for generating and validating JWT tokens.
+ *
+ * Handles creation of signed JWTs for authenticated users, extraction of claims such as username and user ID,
+ * and validation of token integrity and expiration.
+ *
+ * Uses a secret key and expiration time configured via application properties.
+ */
 @Service
 public class JwtService {
 

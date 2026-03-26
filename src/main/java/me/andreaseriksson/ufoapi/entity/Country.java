@@ -2,6 +2,12 @@ package me.andreaseriksson.ufoapi.entity;
 
 import jakarta.persistence.*;
 
+/**
+ * JPA entity representing a country.
+ *
+ * Contains a unique ID and a country code.
+ * Used to associate sightings and locations with a specific country.
+ */
 @Entity
 @Table(name = "countries")
 public class Country {

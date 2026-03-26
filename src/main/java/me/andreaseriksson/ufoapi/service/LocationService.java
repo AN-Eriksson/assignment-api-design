@@ -11,6 +11,15 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service for managing Location entities.
+ *
+ * Provides methods to save locations, retrieve all locations (optionally paged),
+ * find a location by its unique combination of city, state, country, latitude, and longitude,
+ * and look up locations by ID.
+ *
+ * Acts as an intermediary between the LocationRepository and higher-level application logic.
+ */
 @Service
 public class LocationService {
 

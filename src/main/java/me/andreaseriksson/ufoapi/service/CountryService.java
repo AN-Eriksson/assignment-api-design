@@ -7,6 +7,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service for managing Country entities.
+ *
+ * Provides methods to save a country, retrieve all countries, and find a country by its code.
+ * Acts as an intermediary between the CountryRepository and higher-level application logic.
+ */
 @Service
 public class CountryService {
 

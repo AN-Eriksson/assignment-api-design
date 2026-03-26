@@ -14,6 +14,15 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Handles authentication failures for protected endpoints.
+ *
+ * When an unauthenticated user tries to access a protected resource,
+ * this entry point returns a JSON response with HTTP 401 status and
+ * a clear error message.
+ *
+ * Used by Spring Security as the AuthenticationEntryPoint.
+ */
 @Component
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 

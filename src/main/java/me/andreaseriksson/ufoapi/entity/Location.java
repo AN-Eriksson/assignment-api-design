@@ -4,6 +4,12 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 
+/**
+ * JPA entity representing a geographical location associated with a UFO sighting.
+ *
+ * Contains city, state, country, latitude, and longitude fields.
+ * Used to store and retrieve location information for sightings.
+ */
 @Entity
 @Table(name = "locations")
 public class Location {

@@ -16,6 +16,17 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Filter that authenticates incoming HTTP requests using JWT tokens.
+ *
+ * This filter checks for an Authorization header with a Bearer token.
+ * If a valid JWT is found, it extracts the username and sets the authentication
+ * in the Spring Security context for the current request.
+ *
+ * Used for stateless authentication in the API.
+ *
+ * Depends on JwtService for token validation and username extraction.
+ */
 @Component
 public class RestAccessDeniedHandler implements AccessDeniedHandler {
 

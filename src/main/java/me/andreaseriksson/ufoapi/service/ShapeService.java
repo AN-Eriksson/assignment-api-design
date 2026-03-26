@@ -9,6 +9,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service for managing Shape entities.
+ *
+ * Provides methods to save shapes, retrieve all shapes (optionally paged),
+ * and look up shapes by name or ID.
+ *
+ * Acts as an intermediary between the ShapeRepository and higher-level application logic.
+ */
 @Service
 public class ShapeService {
 

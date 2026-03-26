@@ -27,6 +27,15 @@ import java.util.NoSuchElementException;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * REST controller for read-only access to sighting locations.
+ *
+ * Provides endpoints to list all locations with paging and to retrieve a single location by ID.
+ * All endpoints are public (no authentication required) and support HATEOAS links.
+ * Sorting is fixed by 'id' in ascending order; user-supplied sort parameters are ignored.
+ *
+ * No create, update, or delete operations are available for locations.
+ */
 @RestController
 @RequestMapping("/locations")
 @Tag(

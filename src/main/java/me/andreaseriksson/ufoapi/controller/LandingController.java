@@ -13,6 +13,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * REST controller that provides the API landing page.
+ *
+ * Exposes a GET endpoint at "/" that returns a summary of available API resources,
+ * their URLs, and access requirements. This helps users discover the main endpoints
+ * and understand which operations require authentication.
+ *
+ * The landing page is also documented with OpenAPI annotations for clear Swagger UI display.
+ */
 @RestController
 @RequestMapping("/")
 @Tag(name = "API Landing Page", description = "Overview of available API resources and their access requirements.")

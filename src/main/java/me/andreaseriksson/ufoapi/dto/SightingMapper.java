@@ -5,6 +5,14 @@ import me.andreaseriksson.ufoapi.entity.Location;
 import me.andreaseriksson.ufoapi.entity.Shape;
 import me.andreaseriksson.ufoapi.entity.Sighting;
 
+/**
+ * Utility class for mapping Sighting entities to SightingResponse DTOs.
+ *
+ * Provides a static method to convert a Sighting entity to its corresponding SightingResponse,
+ * extracting related location, shape, and country information as needed.
+ *
+ * This class is not intended to be instantiated.
+ */
 public final class SightingMapper {
 
     private SightingMapper() {

@@ -4,6 +4,27 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * Response DTO representing a UFO sighting.
+ *
+ * Contains all relevant details about a sighting, including:
+ * - id: Unique identifier for the sighting.
+ * - sightedAt: Date and time when the sighting occurred.
+ * - durationSeconds: Duration of the sighting in seconds.
+ * - durationText: Human-readable description of the duration.
+ * - comments: Additional comments or description of the sighting.
+ * - datePosted: Date when the sighting was reported.
+ * - city: City where the sighting occurred.
+ * - state: State or region of the sighting.
+ * - countryCode: Country code of the sighting location.
+ * - latitude: Latitude coordinate of the sighting.
+ * - longitude: Longitude coordinate of the sighting.
+ * - shapeName: Name of the reported UFO shape.
+ * - locationId: ID of the associated location (internal reference).
+ * - shapeId: ID of the associated shape (internal reference).
+ *
+ * Used in API responses to provide structured sighting information.
+ */
 public record SightingResponse(
         Long id,
         LocalDateTime sightedAt,     // csv: datetime

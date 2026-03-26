@@ -12,6 +12,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+/**
+ * Global exception handler for REST API errors.
+ *
+ * Handles common exceptions thrown by controllers and returns consistent JSON error responses
+ * with appropriate HTTP status codes and messages.
+ *
+ * Covers validation errors, authentication failures, duplicate resources, not found errors,
+ * and illegal arguments. Formats error responses with timestamp, status, error, message,
+ * and optional details.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

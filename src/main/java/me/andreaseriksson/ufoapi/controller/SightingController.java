@@ -29,6 +29,15 @@ import java.util.NoSuchElementException;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * REST controller for managing UFO sighting records.
+ *
+ * Provides full CRUD operations for sightings:
+ * - GET /sightings and GET /sightings/{id}: Public endpoints for listing and retrieving sightings, with support for filtering, paging, and HATEOAS links. Sorting is always by 'id' ascending; user-supplied sort parameters are ignored.
+ * - POST, PUT, DELETE on /sightings: Require authentication for creating, updating, or deleting sightings.
+ *
+ * All endpoints return consistent error responses and are documented with OpenAPI annotations.
+ */
 @RestController
 @RequestMapping("/sightings")
 @Tag(
