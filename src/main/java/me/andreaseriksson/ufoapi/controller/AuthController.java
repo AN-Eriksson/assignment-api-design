@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import me.andreaseriksson.ufoapi.dto.LoginRequest;
 import me.andreaseriksson.ufoapi.dto.LoginResponse;
@@ -15,6 +16,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(
+        name = "Authentication",
+        description = """
+        Endpoints for user registration and login.
+        - POST /auth/register: Register a new user (public).
+        - POST /auth/login: Obtain a JWT token for authentication (public).
+        """
+)
 public class AuthController {
 
     private final AuthService authService;

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import me.andreaseriksson.ufoapi.dto.CreateSightingRequest;
 import me.andreaseriksson.ufoapi.dto.SightingMapper;
 import me.andreaseriksson.ufoapi.dto.SightingResponse;
@@ -30,6 +31,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/sightings")
+@Tag(
+        name = "Sightings",
+        description = """
+        Endpoints for managing UFO sightings.
+        - GET /sightings and GET /sightings/{id}: Public, no authentication required.
+        - POST, PUT, DELETE on /sightings: Require authentication.
+        - Supports filtering and paging. Sorting is fixed by id.
+        """
+)
 public class SightingController {
     private static final int MAX_PAGE_SIZE = 100;
     private final SightingService service;

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import me.andreaseriksson.ufoapi.dto.ShapeMapper;
 import me.andreaseriksson.ufoapi.dto.ShapeResponse;
 import me.andreaseriksson.ufoapi.service.ShapeService;
@@ -24,6 +25,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/shapes")
+@Tag(
+        name = "Shapes",
+        description = """
+        Read-only endpoints for UFO shape types.
+        - GET /shapes and GET /shapes/{id}: Public, no authentication required.
+        - No create, update, or delete operations.
+        - Supports paging. Sorting is fixed by id.
+        """
+)
 public class ShapeController {
 
     private static final int MAX_PAGE_SIZE = 100;

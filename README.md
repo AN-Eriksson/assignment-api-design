@@ -2,7 +2,7 @@
 
 ## Project Name
 
-*Replace with the name of your API project.*
+*UFOAPI*
 
 ## Objective
 
@@ -10,70 +10,169 @@ Design and develop a robust, well-documented API (REST or GraphQL) that allows u
 
 Choose a dataset (10000+ data points) that interests you — it should include at least one primary CRUD resource and two additional read-only resources. Sources like [Kaggle](https://www.kaggle.com/datasets), public APIs, or CSV files work well. Pick something you find interesting, as you will reuse this API in the next assignment (WT dashboard).
 
-*Describe your API in a few sentences: what dataset does it serve, what are its main resources, and what can users do with it?*
+## This API
+
+The UFO Sightings API serves a dataset of reported UFO sightings, including details such as date, location, shape, duration, and comments.
+Its main resources are:
+
+**Sightings:** Records of individual UFO sightings, with full CRUD (Create, Read, Update, Delete) operations.
+
+Users can filter, page, and retrieve detailed information about each sighting. Creating, updating, or deleting sightings requires authentication, but reading is public.
+
+**Shapes:** Types of UFO shapes reported, available as a read-only resource.
+
+**Locations:** Geographical locations associated with sightings, also read-only.
 
 ## Implementation Type
 
-*Specify: REST or GraphQL*
+*REST*
 
 ## Links and Testing
 
-| | URL / File |
-|---|---|
-| **Production API** | *...* |
-| **API Documentation** | *...* |
-| **GraphQL Playground** (GraphQL only) | *...* |
-| **Postman Collection** | `*.postman_collection.json` |
-| **Production Environment** | `production.postman_environment.json` |
+| | URL / File                                          |
+|---|-----------------------------------------------------|
+| **Production API** | *https://ufoapi.andreaseriksson.me/*                |
+| **API Documentation** | *https://ufoapi.andreaseriksson.me/swagger-ui.html* |
+| **Postman Collection** | `postman/ufoapi.postman_collection.json`            |
+| **Production Environment** | `postman/production.postman_environment.json`       |
 
 **Examiner can verify tests in one of the following ways:**
 
-1. **CI/CD pipeline** — check the pipeline output in GitLab for test results.
+1. **CI/CD pipeline** — check the pipeline output in GitHub for test results.
 2. **Run manually** — no setup needed:
    ```
-   npx newman run <collection.json> -e production.postman_environment.json
+   npx newman run postman/ufoapi.postman_collection.json --environment postman/production.postman_environment.json
    ```
 
 ## Dataset
 
 *Describe the dataset you chose:*
 
-| Field | Description |
-|---|---|
-| **Dataset source** | *e.g. Kaggle, public API, CSV, etc.* |
-| **Primary resource (CRUD)** | *e.g. Movies (id, title, release_year, genre, description)* |
-| **Secondary resource 1 (read-only)** | *e.g. Actors (id, name, movies_played)* |
-| **Secondary resource 2 (read-only)** | *e.g. Ratings (id, text, movie)* |
+| Field | Description                                                 |
+|---|-------------------------------------------------------------|
+| **Dataset source** | *https://www.kaggle.com/datasets/NUFORC/ufo-sightings*                                                   |
+| **Primary resource (CRUD)** | *Sightings (id, sightedAt, durationSeconds, durationText, comments, datePosted, city, state, countryCode, latitude, longitude, shapeId, locationId)* |
+| **Secondary resource 1 (read-only)** | *Shapes (id, name, description)*                     |
+| **Secondary resource 2 (read-only)** | *Locations (id, city, state, countryCode, latitude, longitude)*                            |
 
 
 ## Design Decisions
 
 ### Authentication
 
-*Describe your JWT authentication solution. Why did you choose this approach? What alternatives exist, and what are their trade-offs?*
+This API uses JWT (JSON Web Token) authentication: after login, the server issues a signed token that clients include in the Authorization header for protected requests.
+
+This approach is stateless, scalable, and well-suited for REST APIs.
+
+**Why JWT?**
+
+Stateless (no server session storage needed).
+
+Widely supported and easy to use across different clients.
+
+Scalable for distributed/cloud deployments.
+
+**Alternatives:**
+
+Session-based auth: simpler for web apps, but not stateless or easily scalable.
+
+OAuth2: more powerful and supports third-party logins, but more complex.
+
+API keys: simple, but less secure and without user context.
+
+JWT was chosen for its balance of security, scalability, and simplicity for modern APIs.
 
 ### API Design
 
-**REST students:**
-- *How did you implement HATEOAS? How does it improve API discoverability?*
-- *How did you structure your resource URLs and use HTTP methods/status codes?*
+HATEOAS (Hypermedia as the Engine of Application State) is implemented using Spring HATEOAS.
 
-**GraphQL students:**
-- *How did you design your schema (types, queries, mutations)?*
-- *How did you implement nested queries? How does the single-endpoint approach affect your design?*
+Each API response includes _links objects that provide URLs to related resources and actions.
+For example, a sighting response includes links to itself, related shapes, and locations.
+
+This allows clients to dynamically discover available actions and navigate the API without prior knowledge of its structure, making the API more self-descriptive and easier to use.
+
+Resource URLs follow RESTful conventions:
+
+- Main resources use plural nouns (e.g., /sightings, /shapes, /locations).
+
+- Individual resources are accessed by ID (e.g., /sightings/{id}).
+
+- Nested or related resources are linked via HATEOAS, not nested URLs.
+
+HTTP methods are used according to REST best practices:
+
+- GET for retrieving resources (200 OK, 404 Not Found if missing).
+
+- POST for creating new resources (201 Created, with Location header).
+
+- PUT for updating resources (200 OK or 204 No Content).
+
+- DELETE for removing resources (204 No Content).
+
+Proper status codes are returned for errors (e.g., 400 Bad Request, 401 Unauthorized, 403 Forbidden).
+
+This structure ensures clarity, predictability, and adherence to REST principles.
 
 ### Error Handling
 
 *How does your API handle errors? Describe the format and consistency of your error responses.*
 
-## Core Technologies Used
+The API returns errors in a consistent JSON format with fields like timestamp, status, error, and message.
 
-*List the technologies you chose and briefly explain why:*
+HTTP status codes match the error type (e.g., 400, 401, 404).
+
+All endpoints use this format, making it easy for clients to handle errors.
+
+Example:
+
+```java
+{
+  "timestamp": "2026-03-25T12:34:56.789+00:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Sighting not found"
+}
+```
+
+## Core Technologies Used
+**Spring Boot**
+
+Java framework for building RESTful APIs. Chosen for its rapid development capabilities, strong ecosystem, and seamless integration with Spring Data, Security, and OpenAPI.
+
+**Spring Data JPA**
+
+Provides easy integration with relational databases using JPA (Java Persistence API). Chosen for its ability to simplify database access and reduce boilerplate code.
+
+**Spring Security**
+
+Handles authentication and authorization, including JWT-based security. Chosen for its flexibility, robustness, and deep integration with the Spring ecosystem.
+
+**JWT (JSON Web Token)**
+
+Used for stateless authentication. Chosen for its scalability, statelessness, and suitability for REST APIs.
+
+**HATEOAS (Hypermedia as the Engine of Application State)**
+
+API responses with navigational links. Chosen to make the API more discoverable and self-descriptive.
+
+**OpenAPI (Swagger)**
+
+Used for API documentation and interactive testing. Chosen for its ability to generate clear, interactive docs.
+
+**Postman/Newman**
+
+Used for API testing and automated test runs. Chosen for its popularity, ease of use, and integration with CI/CD pipelines.
+
+**Docker**
+
+Used for containerizing the application and its dependencies. Chosen for portability, consistency across environments, and ease of deployment.
 
 
 ## Reflection
 
 *What was hard? What did you learn? What would you do differently?*
+
+
 
 ## Acknowledgements
 

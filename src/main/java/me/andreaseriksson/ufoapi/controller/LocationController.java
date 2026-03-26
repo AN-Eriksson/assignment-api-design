@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import me.andreaseriksson.ufoapi.dto.LocationMapper;
 import me.andreaseriksson.ufoapi.dto.LocationResponse;
 import me.andreaseriksson.ufoapi.entity.Location;
@@ -25,6 +26,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/locations")
+@Tag(
+        name = "Locations",
+        description = """
+        Read-only endpoints for sighting locations.
+        - GET /locations and GET /locations/{id}: Public, no authentication required.
+        - No create, update, or delete operations.
+        - Supports paging. Sorting is fixed by id.
+        """
+)
 public class LocationController {
 
     private static final int MAX_PAGE_SIZE = 100;
