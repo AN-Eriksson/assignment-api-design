@@ -38,16 +38,10 @@ public class SecurityConfig {
                         .accessDeniedHandler(restAccessDeniedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
-
                         .requestMatchers("/actuator/health/**").permitAll()
-
-                        .requestMatchers(HttpMethod.GET, "/sightings/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/locations/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/shapes/**").permitAll()
-
                         .requestMatchers(HttpMethod.POST, "/sightings/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/sightings/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/sightings/**").authenticated()
