@@ -1,18 +1,19 @@
 package me.andreaseriksson.ufoapi.service;
 
 import me.andreaseriksson.ufoapi.dto.CreateSightingRequest;
+import me.andreaseriksson.ufoapi.dto.SightingFilter;
 import me.andreaseriksson.ufoapi.entity.Location;
 import me.andreaseriksson.ufoapi.entity.Shape;
 import me.andreaseriksson.ufoapi.entity.Sighting;
 import me.andreaseriksson.ufoapi.repository.SightingRepository;
-import org.springframework.stereotype.Service;
+import me.andreaseriksson.ufoapi.repository.SightingSpecifications;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
-import me.andreaseriksson.ufoapi.dto.SightingFilter;
-import me.andreaseriksson.ufoapi.repository.SightingSpecifications;
-import org.springframework.data.jpa.domain.Specification;
 
 @Service
 public class SightingService {

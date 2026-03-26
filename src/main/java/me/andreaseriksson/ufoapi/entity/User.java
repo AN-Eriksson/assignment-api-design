@@ -2,14 +2,12 @@ package me.andreaseriksson.ufoapi.entity;
 
 import jakarta.persistence.*;
 
-import java.time.Instant;
-
 @Entity
 @Table(
         name = "users",
         uniqueConstraints = {
                 @UniqueConstraint(name = "uk_users_username", columnNames = "username"),
-                @UniqueConstraint(name = "uk_users_email",    columnNames = "email")
+                @UniqueConstraint(name = "uk_users_email", columnNames = "email")
         }
 )
 public class User {
@@ -45,20 +43,20 @@ public class User {
         return username;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
     public void setUsername(String username) {
         this.username = username;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
     public void setPasswordHash(String passwordHash) {

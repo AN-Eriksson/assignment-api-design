@@ -11,4 +11,5 @@ public record CreateSightingRequest(
         LocalDate datePosted,
         Long locationId,
         Long shapeId
-) {}
+) {
+}

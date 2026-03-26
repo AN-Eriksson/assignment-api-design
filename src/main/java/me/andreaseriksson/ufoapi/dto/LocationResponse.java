@@ -10,4 +10,5 @@ public record LocationResponse(
         Long countryId,
         BigDecimal latitude,
         BigDecimal longitude
-) {}
+) {
+}

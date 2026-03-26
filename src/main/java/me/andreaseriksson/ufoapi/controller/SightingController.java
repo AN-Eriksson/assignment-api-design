@@ -6,39 +6,39 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.andreaseriksson.ufoapi.dto.CreateSightingRequest;
+import me.andreaseriksson.ufoapi.dto.SightingFilter;
 import me.andreaseriksson.ufoapi.dto.SightingMapper;
 import me.andreaseriksson.ufoapi.dto.SightingResponse;
 import me.andreaseriksson.ufoapi.entity.Sighting;
 import me.andreaseriksson.ufoapi.service.SightingService;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Pageable;
-import me.andreaseriksson.ufoapi.dto.SightingFilter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.CollectionModel;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/sightings")
 @Tag(
         name = "Sightings",
         description = """
-        Endpoints for managing UFO sightings.
-        - GET /sightings and GET /sightings/{id}: Public, no authentication required.
-        - POST, PUT, DELETE on /sightings: Require authentication.
-        - Supports filtering and paging. Sorting is fixed by id.
-        """
+                Endpoints for managing UFO sightings.
+                - GET /sightings and GET /sightings/{id}: Public, no authentication required.
+                - POST, PUT, DELETE on /sightings: Require authentication.
+                - Supports filtering and paging. Sorting is fixed by id.
+                """
 )
 public class SightingController {
     private static final int MAX_PAGE_SIZE = 100;

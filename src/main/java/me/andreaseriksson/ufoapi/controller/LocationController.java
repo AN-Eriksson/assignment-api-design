@@ -7,33 +7,36 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.andreaseriksson.ufoapi.dto.LocationMapper;
 import me.andreaseriksson.ufoapi.dto.LocationResponse;
-import me.andreaseriksson.ufoapi.entity.Location;
 import me.andreaseriksson.ufoapi.service.LocationService;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/locations")
 @Tag(
         name = "Locations",
         description = """
-        Read-only endpoints for sighting locations.
-        - GET /locations and GET /locations/{id}: Public, no authentication required.
-        - No create, update, or delete operations.
-        - Supports paging. Sorting is fixed by id.
-        """
+                Read-only endpoints for sighting locations.
+                - GET /locations and GET /locations/{id}: Public, no authentication required.
+                - No create, update, or delete operations.
+                - Supports paging. Sorting is fixed by id.
+                """
 )
 public class LocationController {
 

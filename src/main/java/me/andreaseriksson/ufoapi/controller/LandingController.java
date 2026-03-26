@@ -21,28 +21,28 @@ public class LandingController {
     @Operation(
             summary = "API Landing Page",
             description = """
-                    Welcome to the UFO Sightings API!
-                   \s
-                    Available Resources:
-                   \s
-                    Sightings (/sightings):
-                    GET /sightings and GET /sightings/{id}: Public, no authentication required.
-                    POST, PUT, DELETE on /sightings: Require authentication.
-                   \s
-                    Shapes (/shapes):
-                    Read-only (GET only), public.
-                   \s
-                    Locations (/locations):
-                    Read-only (GET only), public.
-                   \s
-                    Auth:
-                    POST /auth/register: Register a new user.
-                    POST /auth/login: Obtain a JWT token.
-                   \s
-                    Note:\s
-                    Only POST, PUT, and DELETE requests to /sightings require authentication.\s
-                    All other endpoints are public.
-           \s""",
+                             Welcome to the UFO Sightings API!
+                            \s
+                             Available Resources:
+                            \s
+                             Sightings (/sightings):
+                             GET /sightings and GET /sightings/{id}: Public, no authentication required.
+                             POST, PUT, DELETE on /sightings: Require authentication.
+                            \s
+                             Shapes (/shapes):
+                             Read-only (GET only), public.
+                            \s
+                             Locations (/locations):
+                             Read-only (GET only), public.
+                            \s
+                             Auth:
+                             POST /auth/register: Register a new user.
+                             POST /auth/login: Obtain a JWT token.
+                            \s
+                             Note:\s
+                             Only POST, PUT, and DELETE requests to /sightings require authentication.\s
+                             All other endpoints are public.
+                    \s""",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -51,37 +51,37 @@ public class LandingController {
                                     mediaType = "application/json",
                                     examples = @ExampleObject(
                                             value = """
-                        {
-                          "message": "Welcome to the UFO Sightings API!",
-                          "resources": [
-                            {
-                              "name": "Sightings",
-                              "url": "/sightings",
-                              "description": "GET is public. POST, PUT, DELETE require authentication."
-                            },
-                            {
-                              "name": "Shapes",
-                              "url": "/shapes",
-                              "description": "Read-only access (GET only). No authentication required."
-                            },
-                            {
-                              "name": "Locations",
-                              "url": "/locations",
-                              "description": "Read-only access (GET only). No authentication required."
-                            },
-                            {
-                              "name": "Register",
-                              "url": "/auth/register",
-                              "description": "Register a new user."
-                            },
-                            {
-                              "name": "Login",
-                              "url": "/auth/login",
-                              "description": "Obtain a JWT token for authentication."
-                            }
-                          ]
-                        }
-                        """
+                                                    {
+                                                      "message": "Welcome to the UFO Sightings API!",
+                                                      "resources": [
+                                                        {
+                                                          "name": "Sightings",
+                                                          "url": "/sightings",
+                                                          "description": "GET is public. POST, PUT, DELETE require authentication."
+                                                        },
+                                                        {
+                                                          "name": "Shapes",
+                                                          "url": "/shapes",
+                                                          "description": "Read-only access (GET only). No authentication required."
+                                                        },
+                                                        {
+                                                          "name": "Locations",
+                                                          "url": "/locations",
+                                                          "description": "Read-only access (GET only). No authentication required."
+                                                        },
+                                                        {
+                                                          "name": "Register",
+                                                          "url": "/auth/register",
+                                                          "description": "Register a new user."
+                                                        },
+                                                        {
+                                                          "name": "Login",
+                                                          "url": "/auth/login",
+                                                          "description": "Obtain a JWT token for authentication."
+                                                        }
+                                                      ]
+                                                    }
+                                                    """
                                     )
                             )
                     )

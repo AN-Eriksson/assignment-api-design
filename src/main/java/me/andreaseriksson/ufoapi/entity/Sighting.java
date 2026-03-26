@@ -1,6 +1,7 @@
 package me.andreaseriksson.ufoapi.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -29,7 +30,8 @@ public class Sighting {
     @JoinColumn(name = "shape_id")
     private Shape shape;
 
-    public Sighting() {}
+    public Sighting() {
+    }
 
     public Sighting(LocalDateTime sightedAt, Integer durationSeconds, String durationText,
                     String comments, LocalDate datePosted, Location location, Shape shape) {

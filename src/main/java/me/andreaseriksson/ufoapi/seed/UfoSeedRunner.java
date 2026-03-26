@@ -1,8 +1,10 @@
 package me.andreaseriksson.ufoapi.seed;
 
 import jakarta.persistence.EntityManager;
-import me.andreaseriksson.ufoapi.entity.*;
-import me.andreaseriksson.ufoapi.repository.*;
+import me.andreaseriksson.ufoapi.entity.Country;
+import me.andreaseriksson.ufoapi.entity.Location;
+import me.andreaseriksson.ufoapi.entity.Shape;
+import me.andreaseriksson.ufoapi.entity.Sighting;
 import me.andreaseriksson.ufoapi.service.CountryService;
 import me.andreaseriksson.ufoapi.service.LocationService;
 import me.andreaseriksson.ufoapi.service.ShapeService;
@@ -21,7 +23,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class UfoSeedRunner implements CommandLineRunner {
